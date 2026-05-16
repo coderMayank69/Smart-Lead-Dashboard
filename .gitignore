@@ -1,0 +1,27 @@
+# Node
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+.docker/

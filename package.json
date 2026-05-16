@@ -1,0 +1,22 @@
+{
+  "name": "smart-lead-dashboard",
+  "version": "1.0.0",
+  "description": "Smart Lead Dashboard - Full Stack MERN Application",
+  "author": "Mayank Singh",
+  "license": "MIT",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "keywords": ["mern", "leads", "dashboard", "typescript", "react", "express", "mongodb"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderMayank69/Smart-Lead-Dashboard.git"
+  }
+}
