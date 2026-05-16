@@ -14,56 +14,54 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, leftIcon, rightIcon, className, id, ...props }, ref) => {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
+  ({ label, error, hint, leftIcon, rightIcon, className, required, id, ...rest }, ref) => {
+    const inputId = id ?? `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
 
     return (
-      <div className="w-full">
+      <div className="input-wrapper">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className={cn('input-label', required && 'input-label-required')}
           >
             {label}
-            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
-
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
               {leftIcon}
-            </div>
+            </span>
           )}
-
           <input
             ref={ref}
             id={inputId}
             className={cn(
-              'input-base',
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10',
+              'input-field',
+              leftIcon && 'pl-9',
+              rightIcon && 'pr-9',
               error && 'input-error',
               className
             )}
-            {...props}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            {...rest}
           />
-
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted">
               {rightIcon}
-            </div>
+            </span>
           )}
         </div>
-
         {error && (
-          <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-            <span>⚠</span> {error}
+          <p id={`${inputId}-error`} className="input-error-msg" role="alert">
+            {error}
           </p>
         )}
-
         {hint && !error && (
-          <p className="mt-1.5 text-xs text-slate-400">{hint}</p>
+          <p id={`${inputId}-hint`} className="text-xs text-muted">
+            {hint}
+          </p>
         )}
       </div>
     );

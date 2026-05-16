@@ -3,62 +3,67 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonSize = 'sm' | 'md' | 'lg';
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
-const variantClasses = {
-  primary: 'btn-primary',
+const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+  primary:   'btn-primary',
   secondary: 'btn-secondary',
-  danger: 'btn-danger',
-  ghost: 'btn-ghost',
+  ghost:     'btn-ghost',
+  danger:    'btn-danger',
 };
 
-const sizeClasses = {
+const SIZE_CLASSES: Record<ButtonSize, string> = {
   sm: 'btn-sm',
-  md: 'btn-md',
+  md: '',
   lg: 'btn-lg',
 };
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'md',
-      isLoading = false,
-      leftIcon,
-      rightIcon,
-      className,
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <button
-        ref={ref}
-        className={cn(variantClasses[variant], sizeClasses[size], className)}
-        disabled={disabled || isLoading}
-        {...props}
-      >
-        {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          leftIcon
-        )}
+export const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  leftIcon,
+  rightIcon,
+  children,
+  className,
+  disabled,
+  ...rest
+}) => (
+  <button
+    className={cn(
+      VARIANT_CLASSES[variant],
+      SIZE_CLASSES[size],
+      className
+    )}
+    disabled={disabled || isLoading}
+    aria-busy={isLoading}
+    {...rest}
+  >
+    {isLoading ? (
+      <>
+        <span
+          className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"
+          aria-hidden="true"
+        />
+        <span>Loading…</span>
+      </>
+    ) : (
+      <>
+        {leftIcon && <span aria-hidden="true">{leftIcon}</span>}
         {children}
-        {!isLoading && rightIcon}
-      </button>
-    );
-  }
+        {rightIcon && <span aria-hidden="true">{rightIcon}</span>}
+      </>
+    )}
+  </button>
 );
-
-Button.displayName = 'Button';

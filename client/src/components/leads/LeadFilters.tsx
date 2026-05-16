@@ -1,38 +1,37 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/LeadFilters.tsx – Filter bar with search, status, source
+// src/components/leads/LeadFilters.tsx – Minimal CRM filter bar
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React from 'react';
-import { Search, RotateCcw, ArrowUpDown } from 'lucide-react';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import { Button } from '../ui/Button';
-import { LeadFilters, LeadStatus, LeadSource, SortOrder } from '../../types';
-import { LEAD_SOURCES, LEAD_STATUSES } from '../../utils/constants';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { LeadFilters } from '../../types';
+import { LEAD_STATUSES, LEAD_SOURCES, SORT_OPTIONS } from '../../utils/constants';
 
 interface LeadFiltersBarProps {
-  filters: LeadFilters;
-  onFilterChange: <K extends keyof LeadFilters>(key: K, value: LeadFilters[K]) => void;
+  filters: Partial<LeadFilters>;
+  onFilterChange: (key: keyof LeadFilters, value: string | number) => void;
   onReset: () => void;
 }
 
-const STATUS_OPTIONS = [
+interface FilterOption { value: string; label: string; }
+
+const statusOptions: FilterOption[] = [
   { value: '', label: 'All Statuses' },
-  ...LEAD_STATUSES.map((s) => ({ value: s, label: s })),
+  ...LEAD_STATUSES.map(s => ({ value: s, label: s })),
 ];
 
-const SOURCE_OPTIONS = [
+const sourceOptions: FilterOption[] = [
   { value: '', label: 'All Sources' },
-  ...LEAD_SOURCES.map((s) => ({ value: s, label: s })),
+  ...LEAD_SOURCES.map(s => ({ value: s, label: s })),
 ];
 
-const SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest First' },
+const sortOptions: FilterOption[] = [
+  { value: 'latest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
 ];
 
-const hasActiveFilters = (filters: LeadFilters) =>
-  !!(filters.search || filters.status || filters.source || filters.sortBy !== 'latest');
+const hasActiveFilters = (filters: Partial<LeadFilters>) =>
+  !!(filters.status || filters.source || filters.search);
 
 export const LeadFiltersBar: React.FC<LeadFiltersBarProps> = ({
   filters,
@@ -42,67 +41,80 @@ export const LeadFiltersBar: React.FC<LeadFiltersBarProps> = ({
   const active = hasActiveFilters(filters);
 
   return (
-    <div className="card p-4">
-      <div className="flex flex-wrap gap-3 items-end">
+    <div className="card px-4 py-3">
+      <div className="flex flex-wrap items-center gap-2">
         {/* Search */}
-        <div className="flex-1 min-w-[200px]">
-          <Input
-            placeholder="Search by name or email..."
-            value={filters.search}
+        <div className="search-wrapper flex-1 min-w-48">
+          <Search className="search-icon" aria-hidden="true" />
+          <input
+            type="search"
+            placeholder="Search by name or email…"
+            className="search-input"
+            value={filters.search ?? ''}
             onChange={(e) => onFilterChange('search', e.target.value)}
-            leftIcon={<Search className="w-4 h-4" />}
             aria-label="Search leads"
+            id="lead-search"
           />
         </div>
+
+        {/* Divider */}
+        <div className="hidden sm:block w-px h-6" style={{ background: 'var(--outline)' }} />
 
         {/* Status filter */}
-        <div className="w-40">
-          <Select
-            value={filters.status}
-            onChange={(e) => onFilterChange('status', e.target.value as LeadStatus | '')}
-            options={STATUS_OPTIONS}
-            aria-label="Filter by status"
-          />
-        </div>
+        <select
+          className="select-field w-36"
+          value={filters.status ?? ''}
+          onChange={(e) => onFilterChange('status', e.target.value)}
+          aria-label="Filter by status"
+        >
+          {statusOptions.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
 
         {/* Source filter */}
-        <div className="w-40">
-          <Select
-            value={filters.source}
-            onChange={(e) => onFilterChange('source', e.target.value as LeadSource | '')}
-            options={SOURCE_OPTIONS}
-            aria-label="Filter by source"
-          />
-        </div>
+        <select
+          className="select-field w-36"
+          value={filters.source ?? ''}
+          onChange={(e) => onFilterChange('source', e.target.value)}
+          aria-label="Filter by source"
+        >
+          {sourceOptions.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
 
         {/* Sort */}
-        <div className="w-40">
-          <Select
-            value={filters.sortBy}
-            onChange={(e) => onFilterChange('sortBy', e.target.value as SortOrder)}
-            options={SORT_OPTIONS}
-            aria-label="Sort leads"
-          />
-        </div>
+        <select
+          className="select-field w-36"
+          value={filters.sortBy ?? 'latest'}
+          onChange={(e) => onFilterChange('sortBy', e.target.value)}
+          aria-label="Sort order"
+        >
+          {sortOptions.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
 
-        {/* Reset */}
+        {/* Clear */}
         {active && (
-          <Button
-            variant="ghost"
-            size="md"
+          <button
             onClick={onReset}
-            leftIcon={<RotateCcw className="w-4 h-4" />}
-            aria-label="Reset filters"
+            className="btn-ghost btn-sm flex items-center gap-1 text-red-500 hover:bg-red-50 hover:text-red-700"
+            aria-label="Clear all filters"
           >
-            Reset
-          </Button>
+            <X className="w-3 h-3" />
+            Clear
+          </button>
         )}
 
-        {/* Sort indicator */}
-        <div className="hidden sm:flex items-center gap-1 text-xs text-slate-400">
-          <ArrowUpDown className="w-3 h-3" />
-          <span>{filters.sortBy === 'latest' ? 'Newest first' : 'Oldest first'}</span>
-        </div>
+        {/* Active filter count chip */}
+        {active && (
+          <span className="badge" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
+            <SlidersHorizontal className="w-3 h-3" />
+            Filtered
+          </span>
+        )}
       </div>
     </div>
   );

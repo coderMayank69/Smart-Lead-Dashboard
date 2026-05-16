@@ -1,6 +1,12 @@
-# 🚀 Smart Lead Dashboard
+# Smart Lead Dashboard
 
 <div align="center">
+
+<img src="client/public/logo.png" alt="Smart Lead Dashboard Logo" width="80" height="80" style="border-radius:16px; margin-bottom: 16px" />
+
+### Smart Leads
+
+**A production-grade full-stack Lead Management CRM built with MERN stack and TypeScript.**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -9,11 +15,10 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-**A production-grade full-stack Lead Management Dashboard built with MERN stack and TypeScript.**
-
-[Live Demo](#) · [API Docs](#api-documentation) · [Report Bug](https://github.com/coderMayank69/Smart-Lead-Dashboard/issues)
+[Live Demo](#) · [API Docs](#api-documentation) · [Report Bug](https://github.com/coderMayank69/Smart-Lead-Dashboard/issues) · [Request Feature](https://github.com/coderMayank69/Smart-Lead-Dashboard/issues)
 
 </div>
+
 
 ---
 
