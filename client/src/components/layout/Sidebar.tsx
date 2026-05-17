@@ -6,8 +6,18 @@ import {
   LayoutDashboard, Users, LogOut, X, Sparkles,
   ChevronDown,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../../store/auth.store';
 import toast from 'react-hot-toast';
+
+const navStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
+};
+const navItem = {
+  hidden: { opacity: 0, x: -14 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
+};
 
 interface NavItem { to: string; label: string; icon: React.ReactNode; badge?: string }
 
@@ -38,11 +48,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Mobile overlay */}
-      <div
-        className={`sidebar-overlay ${isOpen ? 'open' : ''}`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="sidebar-overlay open"
+            onClick={onClose}
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar */}
       <aside className={`sidebar scrollbar-thin ${isOpen ? 'open' : ''}`} role="navigation" aria-label="Main navigation">
@@ -70,35 +88,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Main Navigation */}
         <nav className="sidebar-nav">
           <p className="sidebar-section-label">Main Menu</p>
-          {MAIN_NAV.map(({ to, label, icon, badge }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={handleNavClick}
-              className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
-            >
-              <span style={{ flexShrink: 0 }}>{icon}</span>
-              <span style={{ flex: 1 }}>{label}</span>
-              {badge && (
-                <span style={{
-                  fontSize: 10, padding: '2px 7px', borderRadius: 9999, fontWeight: 600,
-                  background: '#dcfce7', color: '#16a34a',
-                }}>
-                  {badge}
-                </span>
-              )}
-            </NavLink>
-          ))}
+          <motion.div variants={navStagger} initial="hidden" animate="show">
+            {MAIN_NAV.map(({ to, label, icon, badge }) => (
+              <motion.div key={to} variants={navItem}>
+                <NavLink
+                  to={to}
+                  onClick={handleNavClick}
+                  className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span style={{ flexShrink: 0 }}>{icon}</span>
+                  <span style={{ flex: 1 }}>{label}</span>
+                  {badge && (
+                    <span style={{
+                      fontSize: 10, padding: '2px 7px', borderRadius: 9999, fontWeight: 600,
+                      background: '#dcfce7', color: '#16a34a',
+                    }}>
+                      {badge}
+                    </span>
+                  )}
+                </NavLink>
+              </motion.div>
+            ))}
+          </motion.div>
 
           <p className="sidebar-section-label">Insights</p>
-          <div className="sidebar-nav-item" style={{ opacity: 0.5, cursor: 'default' }}>
+          <motion.div
+            className="sidebar-nav-item"
+            style={{ opacity: 0.5, cursor: 'default' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            transition={{ delay: 0.35 }}
+          >
             <span style={{ flexShrink: 0 }}><ChevronDown className="w-[18px] h-[18px]" /></span>
             <span style={{ flex: 1 }}>Analytics</span>
             <span style={{
               fontSize: 10, padding: '2px 7px', borderRadius: 9999, fontWeight: 600,
               background: 'var(--surface-low)', color: 'var(--on-surface-muted)',
             }}>Soon</span>
-          </div>
+          </motion.div>
         </nav>
 
         {/* Upgrade Card */}

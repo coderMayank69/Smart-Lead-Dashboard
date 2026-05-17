@@ -1,4 +1,4 @@
-// src/pages/LoginPage.tsx — Shopeers-inspired auth page
+// src/pages/LoginPage.tsx — Animated auth page
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { Input } from '../components/ui/Input';
@@ -48,13 +49,9 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      background: 'var(--surface)',
-    }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--surface)' }}>
       {/* Left — Branding Panel */}
-      <div
+      <motion.div
         className="hidden-mobile"
         style={{
           flex: 1,
@@ -67,46 +64,86 @@ export const LoginPage: React.FC = () => {
           position: 'relative',
           overflow: 'hidden',
         }}
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Background decorations */}
-        <div style={{
-          position: 'absolute', top: -100, right: -100,
-          width: 300, height: 300, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,.15) 0%, transparent 70%)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -50, left: -50,
-          width: 200, height: 200, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(59,130,246,.1) 0%, transparent 70%)',
-        }} />
+        <motion.div
+          style={{
+            position: 'absolute', top: -100, right: -100,
+            width: 300, height: 300, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,.15) 0%, transparent 70%)',
+          }}
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          style={{
+            position: 'absolute', bottom: -50, left: -50,
+            width: 200, height: 200, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,.1) 0%, transparent 70%)',
+          }}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        />
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
-          <Logo className="w-16 h-16 mx-auto mb-6" />
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Logo className="w-16 h-16 mx-auto mb-6" />
+          </motion.div>
+          <motion.h2
+            style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.3 }}
+          >
             GigFlow – Smart Leads
-          </h2>
-          <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>
+          </motion.h2>
+          <motion.p
+            style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.4 }}
+          >
             AI-powered lead management platform for modern sales teams. Track, nurture, and convert leads effortlessly.
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Right — Form Panel */}
-      <div style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 32,
-      }}>
-        <div className="w-full max-w-md animate-scale-in">
-          <div style={{ marginBottom: 36 }}>
+      <motion.div
+        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="w-full max-w-md">
+          <motion.div
+            style={{ marginBottom: 36 }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+          >
             <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--on-surface)', marginBottom: 8, letterSpacing: '-0.02em' }}>
               Welcome back
             </h1>
             <p style={{ fontSize: 14, color: 'var(--on-surface-muted)' }}>
               Sign in to your GigFlow account
             </p>
-          </div>
+          </motion.div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <motion.form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.22 }}
+          >
             <Input
               label="Email Address"
               type="email"
@@ -146,9 +183,15 @@ export const LoginPage: React.FC = () => {
             >
               Sign In
             </Button>
-          </form>
+          </motion.form>
 
-          <p className="text-center text-sm mt-8" style={{ color: 'var(--on-surface-muted)' }}>
+          <motion.p
+            className="text-center text-sm mt-8"
+            style={{ color: 'var(--on-surface-muted)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
             Don't have an account?{' '}
             <Link
               to="/register"
@@ -157,19 +200,24 @@ export const LoginPage: React.FC = () => {
             >
               Create one
             </Link>
-          </p>
+          </motion.p>
 
           {/* Demo credentials */}
-          <div style={{
-            marginTop: 20, padding: '12px 16px', borderRadius: 'var(--radius-sm)',
-            background: '#fffbeb', border: '1px solid #fef3c7',
-          }}>
+          <motion.div
+            style={{
+              marginTop: 20, padding: '12px 16px', borderRadius: 'var(--radius-sm)',
+              background: '#fffbeb', border: '1px solid #fef3c7',
+            }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
             <p style={{ fontSize: 12, color: '#92400e', textAlign: 'center' }}>
               💡 <strong>Demo:</strong> admin@demo.com / password123 · sales@demo.com / password123
             </p>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
