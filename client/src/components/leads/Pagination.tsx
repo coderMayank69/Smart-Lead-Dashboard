@@ -1,10 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/Pagination.tsx – Page navigation
-// ─────────────────────────────────────────────────────────────────────────────
-
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { PaginationMeta } from '../../types';
+import type { PaginationMeta } from '../../types';
 import { cn } from '../../utils/cn';
 
 interface PaginationProps {

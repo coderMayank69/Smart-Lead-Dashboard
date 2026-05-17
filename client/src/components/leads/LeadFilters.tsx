@@ -1,11 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/LeadFilters.tsx – Minimal CRM filter bar
-// ─────────────────────────────────────────────────────────────────────────────
-
 import React from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { LeadFilters } from '../../types';
-import { LEAD_STATUSES, LEAD_SOURCES, SORT_OPTIONS } from '../../utils/constants';
+import type { LeadFilters } from '../../types';
+import { LEAD_STATUSES, LEAD_SOURCES } from '../../utils/constants';
 
 interface LeadFiltersBarProps {
   filters: Partial<LeadFilters>;

@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/api/leads.api.ts – Typed leads API calls
-// ─────────────────────────────────────────────────────────────────────────────
+// Leads API — maps to /api/v1/leads endpoints.
+// buildParams strips undefined/empty values before sending to avoid
+// the server interpreting empty strings as filter values.
 
 import { api } from './axios';
-import {
+import type {
   ApiResponse,
   CreateLeadPayload,
   Lead,
@@ -12,7 +12,6 @@ import {
   UpdateLeadPayload,
 } from '../types';
 
-// Build query params from filters (omit empty values)
 const buildParams = (filters: Partial<LeadFilters>): Record<string, string> => {
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;

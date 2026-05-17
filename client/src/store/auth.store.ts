@@ -1,10 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/store/auth.store.ts – Zustand auth store
-// ─────────────────────────────────────────────────────────────────────────────
+// Auth state management — persists session to localStorage via zustand/persist.
+//
+// The persisted key is 'sld_auth'. We only persist the fields that matter
+// for rehydration (user, token, isAuthenticated) — loading state is transient.
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '../types';
+import type { User } from '../types';
 
 interface AuthState {
   user: User | null;
@@ -25,8 +26,6 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true,
 
       setAuth: (user, token) => {
-        // zustand/persist handles localStorage persistence via 'sld_auth' key
-        // No need for separate localStorage.setItem calls
         set({ user, token, isAuthenticated: true, isLoading: false });
       },
 
@@ -38,7 +37,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'sld_auth',
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

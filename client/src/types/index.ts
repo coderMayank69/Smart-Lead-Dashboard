@@ -1,30 +1,27 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/types/index.ts – Shared TypeScript interfaces for the client
-// ─────────────────────────────────────────────────────────────────────────────
+// Shared TypeScript types for the client.
+// All exports are type-only — nothing here gets emitted at runtime.
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
 export type UserRole = 'admin' | 'sales';
 
-export interface User {
+export type User = {
   _id: string;
   name: string;
   email: string;
   role: UserRole;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface AuthResponse {
+export type AuthResponse = {
   user: User;
   token: string;
-}
+};
 
-// ── Leads ─────────────────────────────────────────────────────────────────────
 export type LeadStatus = 'New' | 'Contacted' | 'Qualified' | 'Lost';
 export type LeadSource = 'Website' | 'Instagram' | 'Referral';
 export type SortOrder = 'latest' | 'oldest';
 
-export interface Lead {
+export type Lead = {
   _id: string;
   name: string;
   email: string;
@@ -35,54 +32,51 @@ export interface Lead {
   createdBy: User;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface CreateLeadPayload {
+export type CreateLeadPayload = {
   name: string;
   email: string;
   status?: LeadStatus;
   source: LeadSource;
   notes?: string;
   assignedTo?: string;
-}
+};
 
-export interface UpdateLeadPayload extends Partial<CreateLeadPayload> {}
+export type UpdateLeadPayload = Partial<CreateLeadPayload>;
 
-// ── Filters ───────────────────────────────────────────────────────────────────
-export interface LeadFilters {
+export type LeadFilters = {
   status?: LeadStatus | '';
   source?: LeadSource | '';
   search: string;
   sortBy: SortOrder;
   page: number;
   limit: number;
-}
+};
 
-// ── API Response ──────────────────────────────────────────────────────────────
-export interface PaginationMeta {
+export type PaginationMeta = {
   total: number;
   page: number;
   limit: number;
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
-}
+};
 
-export interface ApiResponse<T = unknown> {
+export type ApiResponse<T = unknown> = {
   success: boolean;
   message: string;
   data?: T;
   meta?: PaginationMeta;
-}
+};
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
-export interface StatItem {
+export type StatItem = {
   _id: string;
   count: number;
-}
+};
 
-export interface LeadStats {
+export type LeadStats = {
   total: number;
   byStatus: StatItem[];
   bySource: StatItem[];
-}
+};

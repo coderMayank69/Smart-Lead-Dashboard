@@ -1,13 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/LeadTable.tsx – Precision CRM table design
-// ─────────────────────────────────────────────────────────────────────────────
-
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { Edit2, Trash2, Eye, MoreHorizontal } from 'lucide-react';
+import { Edit2, Trash2, Eye } from 'lucide-react';
 import { StatusBadge, SourceBadge } from '../ui/Badge';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
-import { Lead } from '../../types';
+import type { Lead } from '../../types';
 import { cn } from '../../utils/cn';
 
 interface LeadTableProps {

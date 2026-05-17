@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/LeadForm.tsx – Create/Edit lead modal form
-// ─────────────────────────────────────────────────────────────────────────────
+// Create/Edit lead form — resets whenever initialData changes so editing
+// different leads doesn't carry over stale field values.
 
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,7 +9,7 @@ import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { Lead, CreateLeadPayload } from '../../types';
+import type { Lead, CreateLeadPayload } from '../../types';
 import { LEAD_SOURCES, LEAD_STATUSES } from '../../utils/constants';
 
 // Client-side form schema (mirrors server validation)

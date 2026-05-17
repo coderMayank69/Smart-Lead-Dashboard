@@ -1,6 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/api/axios.ts – Axios instance with auth interceptor
-// ─────────────────────────────────────────────────────────────────────────────
+// Axios instance shared across all API modules.
+//
+// Token is read from the zustand store on each request rather than cached
+// at startup — this prevents stale-token issues after login/logout cycles
+// without needing a separate localStorage key.
 
 import axios from 'axios';
 import { useAuthStore } from '../store/auth.store';
@@ -13,11 +15,6 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-// ── Request interceptor – attach JWT ──────────────────────────────────────────
-// Reads token directly from zustand store (which persists to localStorage
-// under 'sld_auth') instead of a separate 'sld_token' key.
-// This eliminates the desync where zustand has the token but the
-// standalone localStorage key was cleared or stale.
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) {
@@ -26,14 +23,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── Response interceptor – handle 401 globally ───────────────────────────────
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear zustand store (which handles localStorage cleanup)
       useAuthStore.getState().clearAuth();
-      // Redirect to login if not already there
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }

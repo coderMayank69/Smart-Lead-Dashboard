@@ -1,9 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/api/auth.api.ts – Typed auth API calls
-// ─────────────────────────────────────────────────────────────────────────────
+// Auth API — thin wrappers over the HTTP client.
+// Keeps auth logic out of components and hooks.
 
 import { api } from './axios';
-import { ApiResponse, AuthResponse, User } from '../types';
+import type { ApiResponse, AuthResponse, User } from '../types';
 
 export const authApi = {
   async register(data: { name: string; email: string; password: string; role?: string }) {

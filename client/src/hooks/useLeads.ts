@@ -1,10 +1,13 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/hooks/useLeads.ts – Lead data fetching and mutation hooks
-// ─────────────────────────────────────────────────────────────────────────────
+// Lead data fetching and mutation hooks.
+//
+// useLeads: manages the full leads list with pagination, filtering, and CRUD.
+// useLeadStats: fetches aggregate stats for the dashboard — fires once on mount.
+//
+// Search is debounced at 400ms to avoid hammering the API on each keystroke.
 
 import { useState, useEffect, useCallback } from 'react';
 import { leadsApi } from '../api/leads.api';
-import { Lead, LeadFilters, PaginationMeta, CreateLeadPayload, UpdateLeadPayload, LeadStats } from '../types';
+import type { Lead, LeadFilters, PaginationMeta, CreateLeadPayload, UpdateLeadPayload, LeadStats } from '../types';
 import { useDebounce } from './useDebounce';
 import toast from 'react-hot-toast';
 
@@ -50,7 +53,7 @@ export const useLeads = () => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
-      // Reset to page 1 when filter changes (except page itself)
+      // Reset to page 1 when any filter other than page itself changes
       ...(key !== 'page' ? { page: 1 } : {}),
     }));
   }, []);
@@ -63,7 +66,7 @@ export const useLeads = () => {
     setIsSubmitting(true);
     try {
       await leadsApi.create(data);
-      toast.success('Lead created successfully! 🎉');
+      toast.success('Lead created successfully!');
       await fetchLeads();
       return true;
     } catch (err: unknown) {
@@ -80,7 +83,7 @@ export const useLeads = () => {
     setIsSubmitting(true);
     try {
       await leadsApi.update(id, data);
-      toast.success('Lead updated successfully!');
+      toast.success('Lead updated');
       await fetchLeads();
       return true;
     } catch (err: unknown) {
@@ -130,7 +133,7 @@ export const useLeadStats = () => {
         const res = await leadsApi.getStats();
         setStats(res.data?.stats ?? null);
       } catch {
-        // Silently fail — stats are not critical
+        // stats are supplementary — don't surface this to the user
       } finally {
         setIsLoading(false);
       }

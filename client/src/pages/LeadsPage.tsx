@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/pages/LeadsPage.tsx – Full lead management CRUD page
-// ─────────────────────────────────────────────────────────────────────────────
-
 import React, { useState } from 'react';
 import { Plus, Download } from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
@@ -13,7 +9,7 @@ import { Pagination } from '../components/leads/Pagination';
 import { Button } from '../components/ui/Button';
 import { useLeads } from '../hooks/useLeads';
 import { exportLeadsToCSV } from '../utils/csv';
-import { Lead, CreateLeadPayload, UpdateLeadPayload } from '../types';
+import type { Lead, CreateLeadPayload, UpdateLeadPayload } from '../types';
 import toast from 'react-hot-toast';
 
 export const LeadsPage: React.FC = () => {

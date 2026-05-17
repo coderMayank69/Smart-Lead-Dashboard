@@ -1,14 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/leads/LeadDetailModal.tsx – View lead details
-// ─────────────────────────────────────────────────────────────────────────────
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Mail, Calendar, User, FileText } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { StatusBadge, SourceBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Lead } from '../../types';
+import type { Lead } from '../../types';
 
 interface LeadDetailModalProps {
   lead: Lead | null;

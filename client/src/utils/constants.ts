@@ -1,12 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/utils/constants.ts – App-wide constants
-// ─────────────────────────────────────────────────────────────────────────────
-
-import { LeadStatus, LeadSource } from '../types';
+import type { LeadStatus, LeadSource } from '../types';
 
 export const LEAD_STATUSES: LeadStatus[] = ['New', 'Contacted', 'Qualified', 'Lost'];
-
 export const LEAD_SOURCES: LeadSource[] = ['Website', 'Instagram', 'Referral'];
+export const SORT_OPTIONS = [
+  { value: 'latest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+] as const;
 
 export const STATUS_CONFIG: Record<
   LeadStatus,
@@ -42,7 +41,7 @@ export const SOURCE_CONFIG: Record<
   LeadSource,
   { label: string; icon: string; color: string }
 > = {
-  Website: { label: 'Website', icon: '🌐', color: 'text-purple-600' },
+  Website:   { label: 'Website',   icon: '🌐', color: 'text-purple-600' },
   Instagram: { label: 'Instagram', icon: '📸', color: 'text-pink-600' },
-  Referral: { label: 'Referral', icon: '👥', color: 'text-teal-600' },
+  Referral:  { label: 'Referral',  icon: '👥', color: 'text-teal-600' },
 };
