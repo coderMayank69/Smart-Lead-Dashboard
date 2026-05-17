@@ -25,7 +25,8 @@ export const leadController = {
 
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const query = req.query as unknown as LeadQueryInput;
+      // Express 5: req.query is read-only; validated data stored in req.validatedQuery
+      const query = (req.validatedQuery ?? req.query) as unknown as LeadQueryInput;
       const { leads, meta } = await leadService.getAll(
         query,
         req.user!.userId,
@@ -39,7 +40,7 @@ export const leadController = {
 
   async getById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = req.params["id"] as string;
+      const id = (req.validatedParams?.id ?? req.params["id"]) as string;
       const lead = await leadService.getById(
         id,
         req.user!.userId,

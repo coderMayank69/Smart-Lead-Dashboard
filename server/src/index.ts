@@ -3,8 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
+import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
@@ -21,38 +20,38 @@ const app = express();
 // ── Security middlewares ──────────────────────────────────────────────────────
 app.use(helmet());
 
-// Support comma-separated CLIENT_URL list, e.g. "https://app.vercel.app,http://localhost:5173"
+// ── Manual CORS (avoids cors@2.8.x wildcard bug with Express 5) ──────────────
 const allowedOrigins = env.CLIENT_URL
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
 
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    // Allow server-to-server (no origin), whitelisted origins, and Render/Vercel previews
-    if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
-      /\.onrender\.com$/.test(origin) ||
-      /\.vercel\.app$/.test(origin)
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS: origin '${origin}' is not allowed`));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin ?? "";
+  const allowed =
+    !origin ||
+    allowedOrigins.includes(origin) ||
+    /\.onrender\.com$/.test(origin) ||
+    /\.vercel\.app$/.test(origin);
 
-app.use(cors(corsOptions));
-// Handle OPTIONS preflight explicitly so it always gets 204 before other middleware
-// Preflight is handled by the cors() middleware above for all routes
+  if (allowed && origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+
+  // Preflight
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
