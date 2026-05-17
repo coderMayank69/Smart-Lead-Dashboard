@@ -16,7 +16,7 @@ const navStagger = {
 };
 const navItem = {
   hidden: { opacity: 0, x: -14 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
 interface NavItem { to: string; label: string; icon: React.ReactNode; badge?: string }

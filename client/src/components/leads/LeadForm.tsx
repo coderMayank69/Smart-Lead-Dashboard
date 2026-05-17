@@ -8,7 +8,7 @@ import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { LEAD_STATUSES, LEAD_SOURCES } from '../../utils/constants';
-import type { Lead } from '../../types';
+import type { Lead, CreateLeadPayload } from '../../types';
 
 const leadSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -22,7 +22,7 @@ type LeadFormValues = z.infer<typeof leadSchema>;
 
 interface LeadFormProps {
   initialData?: Lead;
-  onSubmit: (data: LeadFormValues) => Promise<boolean>;
+  onSubmit: (data: CreateLeadPayload) => Promise<boolean>;
   isSubmitting: boolean;
 }
 
@@ -56,7 +56,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ initialData, onSubmit, isSub
   }, [initialData, reset]);
 
   const onFormSubmit = async (values: LeadFormValues) => {
-    const ok = await onSubmit(values);
+    const ok = await onSubmit(values as CreateLeadPayload);
     if (ok && !initialData) reset();
   };
 
