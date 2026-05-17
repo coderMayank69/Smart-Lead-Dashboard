@@ -24,7 +24,7 @@ const registerSchema = z
       .min(6, 'Password must be at least 6 characters')
       .max(72),
     confirmPassword: z.string(),
-    role: z.enum(['admin', 'sales']).default('sales'),
+    role: z.enum(['admin', 'sales']),
   })
   .refine((d) => d.password === d.confirmPassword, {
     message: 'Passwords do not match',

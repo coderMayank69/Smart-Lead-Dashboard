@@ -16,7 +16,7 @@ import { LEAD_SOURCES, LEAD_STATUSES } from '../../utils/constants';
 const leadFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Enter a valid email address'),
-  status: z.enum(['New', 'Contacted', 'Qualified', 'Lost']).default('New'),
+  status: z.enum(['New', 'Contacted', 'Qualified', 'Lost']),
   source: z.enum(['Website', 'Instagram', 'Referral']),
   notes: z.string().max(500, 'Notes max 500 characters').optional(),
 });

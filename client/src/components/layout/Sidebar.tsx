@@ -6,7 +6,7 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, Settings, LogOut, ChevronRight, X } from 'lucide-react';
 import { useAuthStore } from '../../store/auth.store';
-import { useUiStore } from '../../store/ui.store';
+
 import toast from 'react-hot-toast';
 
 interface NavItem { to: string; label: string; icon: React.ReactNode; }
@@ -24,10 +24,10 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
 
   const handleLogout = () => {
-    logout();
+    clearAuth();
     toast.success('Logged out successfully');
     navigate('/login');
   };
