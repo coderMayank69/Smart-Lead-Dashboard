@@ -83,7 +83,7 @@ export const LoginPage: React.FC = () => {
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
           <Logo className="w-16 h-16 mx-auto mb-6" />
           <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
-            Smart Leads Dashboard
+            GigFlow – Smart Leads
           </h2>
           <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>
             AI-powered lead management platform for modern sales teams. Track, nurture, and convert leads effortlessly.
@@ -102,7 +102,7 @@ export const LoginPage: React.FC = () => {
               Welcome back
             </h1>
             <p style={{ fontSize: 14, color: 'var(--on-surface-muted)' }}>
-              Sign in to your Smart Leads account
+              Sign in to your GigFlow account
             </p>
           </div>
 

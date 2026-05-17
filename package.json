@@ -1,7 +1,7 @@
 {
-  "name": "smart-lead-dashboard",
+  "name": "gigflow-smart-leads-dashboard",
   "version": "1.0.0",
-  "description": "Smart Lead Dashboard - Full Stack MERN Application",
+  "description": "GigFlow – Smart Leads Dashboard - Full Stack MERN Application",
   "author": "Mayank Singh",
   "license": "MIT",
   "scripts": {

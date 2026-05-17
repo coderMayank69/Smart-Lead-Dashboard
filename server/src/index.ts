@@ -79,7 +79,7 @@ if (env.NODE_ENV !== "test") {
 app.get("/health", (_req, res) => {
   res.json({
     success: true,
-    message: "Smart Lead Dashboard API is running",
+    message: "GigFlow – Smart Leads Dashboard API is running",
     timestamp: new Date().toISOString(),
     env: env.NODE_ENV,
   });

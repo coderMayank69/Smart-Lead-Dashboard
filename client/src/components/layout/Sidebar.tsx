@@ -49,11 +49,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Logo */}
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">
-            <img src="/logo.png" alt="Smart Leads" loading="lazy" />
+            <img src="/logo.png" alt="GigFlow" loading="lazy" />
           </div>
           <div className="flex-1 min-w-0">
             <p style={{ fontSize: '15px', fontWeight: 700, color: 'var(--on-surface)', lineHeight: '1.2', letterSpacing: '-0.01em' }}>
-              Smart Leads
+              GigFlow
             </p>
           </div>
           {/* Close btn — mobile only */}

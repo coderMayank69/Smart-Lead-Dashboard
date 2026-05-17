@@ -72,7 +72,7 @@ export const RegisterPage: React.FC = () => {
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
           <Logo className="w-16 h-16 mx-auto mb-6" />
           <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
-            Join Smart Leads
+            Join GigFlow
           </h2>
           <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>
             Start managing your sales pipeline with powerful analytics and AI-driven insights.
@@ -91,7 +91,7 @@ export const RegisterPage: React.FC = () => {
               Create your account
             </h1>
             <p style={{ fontSize: 14, color: 'var(--on-surface-muted)' }}>
-              Get started with Smart Leads in seconds
+              Get started with GigFlow in seconds
             </p>
           </div>
 

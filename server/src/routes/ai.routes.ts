@@ -19,7 +19,7 @@ router.post("/chat", async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const systemPrompt = `You are an AI sales analytics assistant for Smart Lead Dashboard — a CRM platform.
+    const systemPrompt = `You are an AI sales analytics assistant for GigFlow – Smart Leads Dashboard — a CRM platform.
 You help sales teams understand their lead pipeline, conversion rates, and performance metrics.
 Be concise, data-driven, and actionable. Keep answers under 3 sentences unless asked for detail.
 ${context ? `Current dashboard context: ${context}` : ""}`;
