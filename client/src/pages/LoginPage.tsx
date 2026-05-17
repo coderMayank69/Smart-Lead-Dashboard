@@ -5,11 +5,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Sparkles, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
+import { Logo } from '../components/ui/Logo';
 import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
@@ -80,15 +81,7 @@ export const LoginPage: React.FC = () => {
         }} />
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
-          <div className="animate-float" style={{
-            width: 72, height: 72, borderRadius: 18,
-            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 28px',
-            boxShadow: '0 12px 40px rgba(37,99,235,.35)',
-          }}>
-            <Sparkles className="w-8 h-8 text-white" />
-          </div>
+          <Logo className="w-16 h-16 mx-auto mb-6" />
           <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
             Smart Leads Dashboard
           </h2>

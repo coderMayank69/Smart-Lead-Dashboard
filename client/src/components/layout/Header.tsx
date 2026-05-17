@@ -1,7 +1,7 @@
 // src/components/layout/Header.tsx — Shopeers-inspired glassmorphic header
 
 import React from 'react';
-import { Moon, Sun, Bell, Search, Menu, Command } from 'lucide-react';
+import { Moon, Sun, Bell, Menu } from 'lucide-react';
 import { useUiStore } from '../../store/ui.store';
 import { useAuthStore } from '../../store/auth.store';
 
@@ -24,31 +24,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         >
           <Menu className="w-5 h-5" />
         </button>
-
-        {/* Search bar — Shopeers style */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: 'var(--surface-low)', borderRadius: 'var(--radius-sm)',
-          padding: '0 14px', height: 38, minWidth: 220,
-          border: '1px solid transparent',
-          transition: 'all 200ms',
-        }}
-          className="hidden-mobile"
-        >
-          <Search style={{ width: 15, height: 15, color: 'var(--on-surface-muted)', flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: 'var(--on-surface-muted)', opacity: 0.6 }}>
-            Search anything...
-          </span>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 3,
-            marginLeft: 'auto', padding: '2px 6px',
-            background: 'var(--surface-lowest)', borderRadius: 4,
-            border: '1px solid var(--outline)',
-          }}>
-            <Command style={{ width: 10, height: 10, color: 'var(--on-surface-muted)' }} />
-            <span style={{ fontSize: 10, color: 'var(--on-surface-muted)', fontWeight: 500 }}>K</span>
-          </div>
-        </div>
       </div>
 
       {/* Right: Actions */}
