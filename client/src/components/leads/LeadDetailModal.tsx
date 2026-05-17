@@ -42,7 +42,6 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Lead Details"
-      description="Full information about this lead"
     >
       {/* Name header */}
       <div className="flex items-center gap-4 mb-6 pb-5 border-b border-slate-200 dark:border-slate-700">

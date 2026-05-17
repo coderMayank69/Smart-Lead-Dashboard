@@ -27,15 +27,15 @@ export const LeadsPage: React.FC = () => {
   const [viewingLead, setViewingLead] = useState<Lead | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleCreate = useCallback(async (data: CreateLeadPayload) => {
-    const ok = await createLead(data);
+  const handleCreate = useCallback(async (data: any) => {
+    const ok = await createLead(data as CreateLeadPayload);
     if (ok) setModalOpen(false);
     return ok;
   }, [createLead]);
 
-  const handleUpdate = useCallback(async (data: UpdateLeadPayload) => {
+  const handleUpdate = useCallback(async (data: any) => {
     if (!editingLead) return false;
-    const ok = await updateLead(editingLead._id, data);
+    const ok = await updateLead(editingLead._id, data as UpdateLeadPayload);
     if (ok) setEditingLead(null);
     return ok;
   }, [editingLead, updateLead]);
@@ -80,7 +80,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.status}
-            onChange={(e) => updateFilter('status', e.target.value)}
+            onChange={(e) => updateFilter('status', e.target.value as any)}
           >
             <option value="">All Status</option>
             {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -91,7 +91,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.source}
-            onChange={(e) => updateFilter('source', e.target.value)}
+            onChange={(e) => updateFilter('source', e.target.value as any)}
           >
             <option value="">All Sources</option>
             {LEAD_SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -102,7 +102,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.sortBy}
-            onChange={(e) => updateFilter('sortBy', e.target.value)}
+            onChange={(e) => updateFilter('sortBy', e.target.value as any)}
           >
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
