@@ -31,13 +31,50 @@
 - **Dark Mode** — System-aware with manual toggle
 - **Shopeers-inspired UI** — Clean glassmorphic design with micro-animations
 
-## 🖥️ Screenshots
+## 📸 Screenshots
 
-| Login | Dashboard | Leads |
-|-------|-----------|-------|
-| Split-panel auth | Stats + AI chat | Filter & table |
+*(Note: Add your attached screenshots to an `assets/` folder in the repo to display them here)*
 
-## 🚀 Quick Start
+### Dashboard (Light & Dark Mode)
+![Dashboard Light Mode](./assets/dashboard-light.png)
+![Dashboard Dark Mode](./assets/dashboard-dark.png)
+
+### Leads Management & Details
+![Leads Page](./assets/leads-page.png)
+![Lead Details Modal](./assets/lead-modal.png)
+
+### Authentication
+![Login Page](./assets/login.png)
+
+## 🌐 Live Demo
+
+You can view the live application here: **[Smart Lead Dashboard Live Demo](https://smart-lead-dashboard.vercel.app)** *(Replace with your actual Vercel/Render link if different)*
+
+## ⚡ Performance & Lighthouse Scores
+
+This application was engineered with web performance as a primary directive, targeting **90+ Lighthouse scores** across all metrics. Key optimizations include:
+- **Code Splitting:** React routes and component libraries are dynamically chunked via `React.lazy` and `Suspense`.
+- **API Caching:** A custom in-memory cache intercepts redundant API calls within a 5-minute TTL, invalidating instantly upon data mutations (Create, Update, Delete).
+- **Memoization:** Expensive renders (like the Leads data table) are wrapped in `React.memo` to ensure UI stability during independent state changes.
+- **Debouncing:** Rapid state updates (like search queries) are debounced by 400ms to prevent API thrashing.
+- **Image & Asset Lazy Loading:** Non-critical visual assets are deferred using `loading="lazy"`.
+
+## 🧠 Challenges Faced
+
+- **Complex State Management:** Orchestrating modal visibility, global authentication, and API caching required a robust `Zustand` architecture paired with custom React hooks (`useLeads`).
+- **Production Build Stability:** Strict TypeScript constraints (like `verbatimModuleSyntax` and orphaned UI components) initially blocked CI/CD pipelines, requiring deep refactoring of module resolution patterns.
+- **AI Context Integration:** Securely injecting real-time MongoDB pipeline statistics into the Groq LLaMA prompt without exposing raw data or slowing down the UI required careful backend orchestration.
+
+## 🔮 Future Improvements
+
+- **Scalability & Cloud Infrastructure:** Move from PaaS (Render/Vercel) to a dedicated cloud architecture (AWS/GCP), attach a custom domain, and implement a load balancer for high availability.
+- **Advanced Caching & Rate Limiting:** Implement server-side caching (e.g., Redis) in tandem with the existing client-side cache, and add strict API rate limiting to protect endpoints from abuse.
+- **Drag-and-Drop Kanban Board:** Convert the tabular leads view into an interactive Trello-style pipeline.
+- **Email Integration:** Connect providers like Resend to dispatch automated follow-ups directly from the dashboard.
+- **Advanced Role Permissions:** Granular permissions allowing Sales users to only view leads explicitly assigned to them.
+- **Webhooks:** Automated lead ingestion from external sources like Typeform, Facebook Ads, or custom landing pages.
+
+## 💻 Local Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -121,12 +158,12 @@ The AI assistant uses **Groq's LLaMA 3.3 70B** model. On each message it automat
 
 ## 🚢 Deployment
 
-### Render (recommended)
+### Render & Vercel
 1. Push to GitHub
-2. Create **Web Service** for `server/` → set all env vars in Render dashboard → add `GROQ_API_KEY`
-3. Create **Web Service** for `client/` → set `VITE_API_URL` to your Render server URL
+2. Create **Web Service** on Render for `server/` → set all env vars → add `GROQ_API_KEY`
+3. Create **Project** on Vercel for `client/` → set `VITE_API_URL` to your Render server URL
 
-The CORS config automatically accepts any `.onrender.com` and `.vercel.app` origin.
+The CORS config automatically accepts `.onrender.com` and `.vercel.app` origins.
 
 ## 📄 Demo Credentials
 | Role | Email | Password |
