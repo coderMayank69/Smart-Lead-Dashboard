@@ -1,6 +1,6 @@
-<p align="center">
+
   # GigFlow - Smart Lead Dashboard
-</p>
+
 
 <p align="center">
   <img src="client/public/logo.png" alt="Smart Lead Dashboard Logo" width="100" style="border-radius:20px"/>
