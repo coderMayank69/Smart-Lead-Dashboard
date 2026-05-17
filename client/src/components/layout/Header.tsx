@@ -9,7 +9,6 @@ import { useAuthStore } from '../../store/auth.store';
 const ROUTE_LABELS: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/leads': 'Leads',
-  '/settings': 'Settings',
 };
 
 interface HeaderProps {

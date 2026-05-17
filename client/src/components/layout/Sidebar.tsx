@@ -14,7 +14,6 @@ interface NavItem { to: string; label: string; icon: React.ReactNode; badge?: st
 const MAIN_NAV: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-[18px] h-[18px]" /> },
   { to: '/leads', label: 'Leads', icon: <Users className="w-[18px] h-[18px]" />, badge: 'New' },
-  { to: '/settings', label: 'Settings', icon: <Settings className="w-[18px] h-[18px]" /> },
 ];
 
 interface SidebarProps {
