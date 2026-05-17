@@ -25,13 +25,12 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true,
 
       setAuth: (user, token) => {
-        localStorage.setItem('sld_token', token);
+        // zustand/persist handles localStorage persistence via 'sld_auth' key
+        // No need for separate localStorage.setItem calls
         set({ user, token, isAuthenticated: true, isLoading: false });
       },
 
       clearAuth: () => {
-        localStorage.removeItem('sld_token');
-        localStorage.removeItem('sld_user');
         set({ user: null, token: null, isAuthenticated: false, isLoading: false });
       },
 

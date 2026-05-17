@@ -9,19 +9,19 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
+import { env } from "./config/env";
 import { connectDB } from "./config/db";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware";
 import authRoutes from "./routes/auth.routes";
 import leadRoutes from "./routes/lead.routes";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // ── Security middlewares ──────────────────────────────────────────────────────
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: env.CLIENT_URL,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -50,8 +50,8 @@ app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // ── Logging ───────────────────────────────────────────────────────────────────
-if (process.env.NODE_ENV !== "test") {
-  app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+if (env.NODE_ENV !== "test") {
+  app.use(morgan(env.isProduction ? "combined" : "dev"));
 }
 
 // ── Health check ──────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ app.get("/health", (_req, res) => {
     success: true,
     message: "Smart Lead Dashboard API is running",
     timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV || "development",
+    env: env.NODE_ENV,
   });
 });
 
@@ -75,9 +75,9 @@ app.use(errorHandler);
 // ── Start server ──────────────────────────────────────────────────────────────
 const start = async () => {
   await connectDB();
-  app.listen(PORT, () => {
-    console.log(`[SERVER] 🚀 Running on http://localhost:${PORT}`);
-    console.log(`[SERVER] 📍 Environment: ${process.env.NODE_ENV || "development"}`);
+  app.listen(env.PORT, () => {
+    console.log(`[SERVER] 🚀 Running on http://localhost:${env.PORT}`);
+    console.log(`[SERVER] 📍 Environment: ${env.NODE_ENV}`);
   });
 };
 

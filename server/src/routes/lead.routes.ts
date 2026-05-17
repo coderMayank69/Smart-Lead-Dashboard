@@ -10,6 +10,7 @@ import {
   createLeadSchema,
   updateLeadSchema,
   leadQuerySchema,
+  objectIdSchema,
 } from "../validators/lead.validator";
 
 const router = Router();
@@ -23,10 +24,10 @@ router.get("/stats", leadController.getStats);
 // CRUD
 router.get("/", validate(leadQuerySchema, "query"), leadController.getAll);
 router.post("/", validate(createLeadSchema), leadController.create);
-router.get("/:id", leadController.getById);
-router.put("/:id", validate(updateLeadSchema), leadController.update);
+router.get("/:id", validate(objectIdSchema, "params"), leadController.getById);
+router.put("/:id", validate(objectIdSchema, "params"), validate(updateLeadSchema), leadController.update);
 
 // Delete — admin only
-router.delete("/:id", authorise("admin", "sales"), leadController.delete);
+router.delete("/:id", validate(objectIdSchema, "params"), authorise("admin", "sales"), leadController.delete);
 
 export default router;

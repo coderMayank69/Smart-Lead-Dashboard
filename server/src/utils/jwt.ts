@@ -4,14 +4,12 @@
 
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "../types";
-
-const JWT_SECRET = process.env.JWT_SECRET || "change_me_in_production";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+import { env } from "../config/env";
 
 export const signToken = (payload: JwtPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
 };
 
 export const verifyToken = (token: string): JwtPayload => {
-  return jwt.verify(token, JWT_SECRET) as JwtPayload;
+  return jwt.verify(token, env.JWT_SECRET) as JwtPayload;
 };

@@ -3,20 +3,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import mongoose from "mongoose";
+import { env } from "./env";
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 5000;
 
 export const connectDB = async (retries = MAX_RETRIES): Promise<void> => {
-  const mongoUri = process.env.MONGODB_URI;
-
-  if (!mongoUri) {
-    console.error("[DB] MONGODB_URI environment variable is not set");
-    process.exit(1);
-  }
-
   try {
-    await mongoose.connect(mongoUri, {
+    await mongoose.connect(env.MONGODB_URI, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });

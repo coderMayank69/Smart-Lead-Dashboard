@@ -40,3 +40,9 @@ export const leadQuerySchema = z.object({
 export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;
 export type LeadQueryInput = z.infer<typeof leadQuerySchema>;
+
+// ObjectId param validation — used in GET/PUT/DELETE /:id routes
+export const objectIdSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid resource ID format"),
+});
+

@@ -4,15 +4,14 @@
 
 import { User } from "../models/User";
 import { signToken } from "../utils/jwt";
+import { AppError } from "../utils/AppError";
 import { RegisterInput, LoginInput } from "../validators/auth.validator";
 
 export const authService = {
   async register(data: RegisterInput) {
     const existing = await User.findOne({ email: data.email });
     if (existing) {
-      const error = new Error("An account with this email already exists");
-      (error as Error & { statusCode: number }).statusCode = 409;
-      throw error;
+      throw AppError.conflict("An account with this email already exists");
     }
 
     const user = await User.create(data);
@@ -26,16 +25,12 @@ export const authService = {
     const user = await User.findOne({ email: data.email }).select("+password");
 
     if (!user) {
-      const error = new Error("Invalid email or password");
-      (error as Error & { statusCode: number }).statusCode = 401;
-      throw error;
+      throw AppError.unauthorized("Invalid email or password");
     }
 
     const isMatch = await user.comparePassword(data.password);
     if (!isMatch) {
-      const error = new Error("Invalid email or password");
-      (error as Error & { statusCode: number }).statusCode = 401;
-      throw error;
+      throw AppError.unauthorized("Invalid email or password");
     }
 
     const token = signToken({ userId: user.id, role: user.role });
@@ -49,9 +44,7 @@ export const authService = {
   async getProfile(userId: string) {
     const user = await User.findById(userId);
     if (!user) {
-      const error = new Error("User not found");
-      (error as Error & { statusCode: number }).statusCode = 404;
-      throw error;
+      throw AppError.notFound("User not found");
     }
     return user;
   },

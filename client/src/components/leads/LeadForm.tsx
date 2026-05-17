@@ -2,7 +2,7 @@
 // src/components/leads/LeadForm.tsx – Create/Edit lead modal form
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -51,16 +51,25 @@ export const LeadForm: React.FC<LeadFormProps> = ({
     formState: { errors },
   } = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
-    defaultValues: initialData
-      ? {
-          name: initialData.name,
-          email: initialData.email,
-          status: initialData.status,
-          source: initialData.source,
-          notes: initialData.notes ?? '',
-        }
-      : { status: 'New', notes: '' },
+    defaultValues: { status: 'New', notes: '' },
   });
+
+  // BUG FIX: useForm defaultValues are only applied on mount.
+  // When initialData changes (e.g. user clicks Edit on a different lead),
+  // we must explicitly reset the form to the new values.
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        name: initialData.name,
+        email: initialData.email,
+        status: initialData.status,
+        source: initialData.source,
+        notes: initialData.notes ?? '',
+      });
+    } else {
+      reset({ status: 'New', notes: '' });
+    }
+  }, [initialData, reset]);
 
   const handleClose = () => {
     reset();

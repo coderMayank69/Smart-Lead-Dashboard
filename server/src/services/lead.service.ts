@@ -2,9 +2,10 @@
 // src/services/lead.service.ts  – Lead business logic
 // ─────────────────────────────────────────────────────────────────────────────
 
-import mongoose, { Types } from "mongoose";
-import { Lead, ILeadDocument } from "../models/Lead";
+import { Types } from "mongoose";
+import { Lead } from "../models/Lead";
 import { buildPaginationMeta } from "../utils/response";
+import { AppError } from "../utils/AppError";
 import {
   CreateLeadInput,
   UpdateLeadInput,
@@ -70,18 +71,19 @@ export const leadService = {
       .populate("assignedTo", "name email");
 
     if (!lead) {
-      const error = new Error("Lead not found");
-      (error as Error & { statusCode: number }).statusCode = 404;
-      throw error;
+      throw AppError.notFound("Lead not found");
     }
 
-    if (
-      userRole === "sales" &&
-      lead.createdBy.toString() !== userId
-    ) {
-      const error = new Error("Access denied");
-      (error as Error & { statusCode: number }).statusCode = 403;
-      throw error;
+    // BUG FIX: After populate(), createdBy is an object { _id, name, email }
+    // so we must compare ._id.toString(), NOT .toString() which yields [object Object]
+    if (userRole === "sales") {
+      // Works for both populated (object with _id) and unpopulated (ObjectId) cases
+      const creatorRef = lead.createdBy as unknown as { _id?: Types.ObjectId } | Types.ObjectId;
+      const creatorId = "_id" in creatorRef ? creatorRef._id!.toString() : creatorRef.toString();
+
+      if (creatorId !== userId) {
+        throw AppError.forbidden("Access denied");
+      }
     }
 
     return lead;
