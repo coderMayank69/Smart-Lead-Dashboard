@@ -1,25 +1,17 @@
 // src/components/layout/Header.tsx — Shopeers-inspired glassmorphic header
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { Moon, Sun, Bell, Search, Menu, Command } from 'lucide-react';
 import { useUiStore } from '../../store/ui.store';
 import { useAuthStore } from '../../store/auth.store';
-
-const ROUTE_LABELS: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/leads': 'Leads',
-};
 
 interface HeaderProps {
   onMenuClick: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
-  const { pathname } = useLocation();
   const { isDarkMode, toggleDarkMode } = useUiStore();
   const { user } = useAuthStore();
-  const currentLabel = ROUTE_LABELS[pathname] ?? 'Dashboard';
 
   return (
     <header className="header" role="banner">

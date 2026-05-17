@@ -1,7 +1,7 @@
 // src/pages/LeadsPage.tsx — Shopeers-inspired leads management page
 
 import React, { useState, useCallback } from 'react';
-import { Plus, Download, Search, Filter, RefreshCw } from 'lucide-react';
+import { Plus, Download, Search, Filter } from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { LeadTable } from '../components/leads/LeadTable';
 import { LeadForm } from '../components/leads/LeadForm';
@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 export const LeadsPage: React.FC = () => {
   const {
     leads, meta, isLoading, isSubmitting,
-    filters, updateFilter, resetFilters, refetch,
+    filters, updateFilter, resetFilters,
     createLead, updateLead, deleteLead,
   } = useLeads();
 

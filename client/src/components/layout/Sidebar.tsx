@@ -3,8 +3,8 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Settings, LogOut, X, Sparkles,
-  ChevronDown, TrendingUp,
+  LayoutDashboard, Users, LogOut, X, Sparkles,
+  ChevronDown,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/auth.store';
 import toast from 'react-hot-toast';
