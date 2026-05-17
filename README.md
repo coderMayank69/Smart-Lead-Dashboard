@@ -48,7 +48,7 @@
 
 ## 🌐 Live Demo
 
-You can view the live application here: **[Smart Lead Dashboard Live Demo](https://smart-lead-dashboard.vercel.app)** *(Replace with your actual Vercel/Render link if different)*
+You can view the live application here: **[Smart Lead Dashboard Live Demo](https://smart-lead-dashboard-mayank.vercel.app/)**
 
 ## ⚡ Performance & Lighthouse Scores
 
