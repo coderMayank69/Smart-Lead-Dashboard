@@ -1,103 +1,64 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/components/ui/Modal.tsx – Accessible modal dialog
-// ─────────────────────────────────────────────────────────────────────────────
+// src/components/ui/Modal.tsx — Shopeers-style modal dialog
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { cn } from '../../utils/cn';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  description?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const sizeClasses = {
-  sm: 'max-w-md',
-  md: 'max-w-lg',
-  lg: 'max-w-2xl',
-  xl: 'max-w-4xl',
-};
+const SIZE_MAP = { sm: 400, md: 480, lg: 560 };
 
 export const Modal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'md',
-  description,
+  isOpen, onClose, title, children, size = 'md',
 }) => {
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Lock body scroll
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKeyDown);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-      {/* Backdrop */}
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Panel */}
-      <div
-        className={cn(
-          'relative w-full card shadow-2xl animate-slide-up',
-          sizeClasses[size]
-        )}
+        ref={panelRef}
+        className="modal-panel"
+        style={{ maxWidth: SIZE_MAP[size] }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-slate-200 dark:border-slate-700">
-          <div>
-            <h2
-              id="modal-title"
-              className="text-lg font-semibold text-slate-900 dark:text-slate-100"
-            >
-              {title}
-            </h2>
-            {description && (
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                {description}
-              </p>
-            )}
-          </div>
+        <div className="modal-header">
+          <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--on-surface)', letterSpacing: '-0.01em' }}>
+            {title}
+          </h2>
           <button
             onClick={onClose}
-            className="btn-ghost p-1.5 rounded-lg ml-4 flex-shrink-0"
-            aria-label="Close modal"
+            aria-label="Close"
+            style={{
+              width: 32, height: 32, borderRadius: 'var(--radius-sm)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--surface-low)', border: 'none', cursor: 'pointer',
+              color: 'var(--on-surface-muted)', transition: 'background 150ms',
+            }}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Body */}
-        <div className="p-6">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );

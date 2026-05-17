@@ -14,6 +14,7 @@ import { connectDB } from "./config/db";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware";
 import authRoutes from "./routes/auth.routes";
 import leadRoutes from "./routes/lead.routes";
+import aiRoutes from "./routes/ai.routes";
 
 const app = express();
 
@@ -28,8 +29,13 @@ const allowedOrigins = env.CLIENT_URL
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server requests (no origin) and listed origins
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow server-to-server (no origin), whitelisted origins, and Render/Vercel previews
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /\.onrender\.com$/.test(origin) ||
+      /\.vercel\.app$/.test(origin)
+    ) {
       callback(null, true);
     } else {
       callback(new Error(`CORS: origin '${origin}' is not allowed`));
@@ -42,7 +48,7 @@ const corsOptions: cors.CorsOptions = {
 
 app.use(cors(corsOptions));
 // Handle OPTIONS preflight explicitly so it always gets 204 before other middleware
-app.options("*", cors(corsOptions));
+// Preflight is handled by the cors() middleware above for all routes
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 const limiter = rateLimit({
@@ -83,6 +89,7 @@ app.get("/health", (_req, res) => {
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use("/api/v1/auth", authLimiter, authRoutes);
 app.use("/api/v1/leads", leadRoutes);
+app.use("/api/v1/ai", aiRoutes);
 
 // ── Error handlers (must be last) ────────────────────────────────────────────
 app.use(notFoundHandler);

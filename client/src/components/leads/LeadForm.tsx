@@ -1,5 +1,4 @@
-// Create/Edit lead form — resets whenever initialData changes so editing
-// different leads doesn't carry over stale field values.
+// src/components/leads/LeadForm.tsx — Clean lead create/edit form
 
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,54 +7,42 @@ import { z } from 'zod';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
-import { Modal } from '../ui/Modal';
-import type { Lead, CreateLeadPayload } from '../../types';
-import { LEAD_SOURCES, LEAD_STATUSES } from '../../utils/constants';
+import { LEAD_STATUSES, LEAD_SOURCES } from '../../utils/constants';
+import type { Lead } from '../../types';
 
-// Client-side form schema (mirrors server validation)
-const leadFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
-  email: z.string().email('Enter a valid email address'),
-  status: z.enum(['New', 'Contacted', 'Qualified', 'Lost']),
-  source: z.enum(['Website', 'Instagram', 'Referral']),
-  notes: z.string().max(500, 'Notes max 500 characters').optional(),
+const leadSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Enter a valid email'),
+  status: z.string().min(1, 'Pick a status'),
+  source: z.string().min(1, 'Pick a source'),
+  notes: z.string().optional(),
 });
 
-type LeadFormValues = z.infer<typeof leadFormSchema>;
+type LeadFormValues = z.infer<typeof leadSchema>;
 
 interface LeadFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: CreateLeadPayload) => Promise<boolean>;
-  isLoading?: boolean;
   initialData?: Lead;
+  onSubmit: (data: LeadFormValues) => Promise<boolean>;
+  isSubmitting: boolean;
 }
 
-const STATUS_OPTIONS = LEAD_STATUSES.map((s) => ({ value: s, label: s }));
-const SOURCE_OPTIONS = LEAD_SOURCES.map((s) => ({ value: s, label: s }));
-
-export const LeadForm: React.FC<LeadFormProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  isLoading = false,
-  initialData,
-}) => {
-  const isEditing = !!initialData;
-
+export const LeadForm: React.FC<LeadFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<LeadFormValues>({
-    resolver: zodResolver(leadFormSchema),
-    defaultValues: { status: 'New', notes: '' },
+    resolver: zodResolver(leadSchema),
+    defaultValues: {
+      name: initialData?.name ?? '',
+      email: initialData?.email ?? '',
+      status: initialData?.status ?? 'New',
+      source: initialData?.source ?? '',
+      notes: initialData?.notes ?? '',
+    },
   });
 
-  // BUG FIX: useForm defaultValues are only applied on mount.
-  // When initialData changes (e.g. user clicks Edit on a different lead),
-  // we must explicitly reset the form to the new values.
   useEffect(() => {
     if (initialData) {
       reset({
@@ -65,101 +52,68 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         source: initialData.source,
         notes: initialData.notes ?? '',
       });
-    } else {
-      reset({ status: 'New', notes: '' });
     }
   }, [initialData, reset]);
 
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
-
-  const handleFormSubmit = async (values: LeadFormValues) => {
-    const success = await onSubmit(values as CreateLeadPayload);
-    if (success) handleClose();
+  const onFormSubmit = async (values: LeadFormValues) => {
+    const ok = await onSubmit(values);
+    if (ok && !initialData) reset();
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={isEditing ? 'Edit Lead' : 'Create New Lead'}
-      description={
-        isEditing
-          ? 'Update the lead information below'
-          : 'Fill in the details to add a new lead'
-      }
-    >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Full Name"
-            placeholder="Rahul Sharma"
-            required
-            error={errors.name?.message}
-            {...register('name')}
-          />
-          <Input
-            label="Email Address"
-            type="email"
-            placeholder="rahul@example.com"
-            required
-            error={errors.email?.message}
-            {...register('email')}
-          />
-        </div>
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      <Input
+        label="Full Name"
+        placeholder="Jane Smith"
+        required
+        error={errors.name?.message}
+        {...register('name')}
+      />
 
-        <div className="grid grid-cols-2 gap-4">
-          <Select
-            label="Status"
-            options={STATUS_OPTIONS}
-            error={errors.status?.message}
-            {...register('status')}
-          />
-          <Select
-            label="Source"
-            options={SOURCE_OPTIONS}
-            placeholder="Select source"
-            required
-            error={errors.source?.message}
-            {...register('source')}
-          />
-        </div>
+      <Input
+        label="Email"
+        type="email"
+        placeholder="jane@company.com"
+        required
+        error={errors.email?.message}
+        {...register('email')}
+      />
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-            Notes
-          </label>
-          <textarea
-            className="input-base resize-none h-24"
-            placeholder="Add any relevant notes about this lead..."
-            {...register('notes')}
-          />
-          {errors.notes && (
-            <p className="mt-1.5 text-xs text-red-600">⚠ {errors.notes.message}</p>
-          )}
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Select
+          label="Status"
+          required
+          options={LEAD_STATUSES.map((s) => ({ value: s, label: s }))}
+          error={errors.status?.message}
+          {...register('status')}
+        />
 
-        <div className="flex gap-3 pt-2">
-          <Button
-            type="button"
-            variant="secondary"
-            className="flex-1"
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            className="flex-1"
-            isLoading={isLoading}
-          >
-            {isEditing ? 'Update Lead' : 'Create Lead'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+        <Select
+          label="Source"
+          required
+          placeholder="Select..."
+          options={LEAD_SOURCES.map((s) => ({ value: s, label: s }))}
+          error={errors.source?.message}
+          {...register('source')}
+        />
+      </div>
+
+      <div className="input-wrapper">
+        <label className="input-label">Notes</label>
+        <textarea
+          className="input-base"
+          rows={3}
+          placeholder="Optional notes about this lead..."
+          style={{ resize: 'vertical' }}
+          {...register('notes')}
+        />
+      </div>
+
+      <div style={{ paddingTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button type="submit" isLoading={isSubmitting}>
+          {initialData ? 'Save Changes' : 'Create Lead'}
+        </Button>
+      </div>
+    </form>
   );
 };

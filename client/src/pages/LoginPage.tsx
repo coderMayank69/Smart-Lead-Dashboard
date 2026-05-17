@@ -1,13 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/pages/LoginPage.tsx
-// ─────────────────────────────────────────────────────────────────────────────
+// src/pages/LoginPage.tsx — Shopeers-inspired auth page
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Zap } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, ArrowRight } from 'lucide-react';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { Input } from '../components/ui/Input';
@@ -37,7 +35,7 @@ export const LoginPage: React.FC = () => {
       const res = await authApi.login(values);
       if (res.success && res.data) {
         setAuth(res.data.user, res.data.token);
-        toast.success(`Welcome back, ${res.data.user.name}! 👋`);
+        toast.success(`Welcome back, ${res.data.user.name}!`);
         navigate('/dashboard');
       }
     } catch (err: unknown) {
@@ -49,23 +47,72 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-slide-up">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-glow">
-            <Zap className="w-7 h-7 text-white" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      background: 'var(--surface)',
+    }}>
+      {/* Left — Branding Panel */}
+      <div
+        className="hidden-mobile"
+        style={{
+          flex: 1,
+          background: 'linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1e293b 100%)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 48,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Background decorations */}
+        <div style={{
+          position: 'absolute', top: -100, right: -100,
+          width: 300, height: 300, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(59,130,246,.15) 0%, transparent 70%)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -50, left: -50,
+          width: 200, height: 200, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(59,130,246,.1) 0%, transparent 70%)',
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
+          <div className="animate-float" style={{
+            width: 72, height: 72, borderRadius: 18,
+            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 28px',
+            boxShadow: '0 12px 40px rgba(37,99,235,.35)',
+          }}>
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            Welcome back
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            Sign in to your Smart Leads account
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
+            Smart Leads Dashboard
+          </h2>
+          <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>
+            AI-powered lead management platform for modern sales teams. Track, nurture, and convert leads effortlessly.
           </p>
         </div>
+      </div>
 
-        {/* Card */}
-        <div className="card p-8">
+      {/* Right — Form Panel */}
+      <div style={{
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 32,
+      }}>
+        <div className="w-full max-w-md animate-scale-in">
+          <div style={{ marginBottom: 36 }}>
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--on-surface)', marginBottom: 8, letterSpacing: '-0.02em' }}>
+              Welcome back
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--on-surface-muted)' }}>
+              Sign in to your Smart Leads account
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
               label="Email Address"
@@ -102,27 +149,32 @@ export const LoginPage: React.FC = () => {
               className="w-full"
               size="lg"
               isLoading={isSubmitting}
+              rightIcon={!isSubmitting ? <ArrowRight className="w-4 h-4" /> : undefined}
             >
               Sign In
             </Button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm mt-8" style={{ color: 'var(--on-surface-muted)' }}>
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-primary-600 hover:text-primary-700 font-medium hover:underline"
+              style={{ color: 'var(--primary)', fontWeight: 600 }}
+              className="hover:underline"
             >
               Create one
             </Link>
           </p>
-        </div>
 
-        {/* Demo credentials hint */}
-        <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-          <p className="text-xs text-amber-700 dark:text-amber-400 text-center">
-            💡 <strong>Demo:</strong> admin@demo.com / password123 (admin) · sales@demo.com / password123 (sales)
-          </p>
+          {/* Demo credentials */}
+          <div style={{
+            marginTop: 20, padding: '12px 16px', borderRadius: 'var(--radius-sm)',
+            background: '#fffbeb', border: '1px solid #fef3c7',
+          }}>
+            <p style={{ fontSize: 12, color: '#92400e', textAlign: 'center' }}>
+              💡 <strong>Demo:</strong> admin@demo.com / password123 · sales@demo.com / password123
+            </p>
+          </div>
         </div>
       </div>
     </div>

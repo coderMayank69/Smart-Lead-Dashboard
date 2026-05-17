@@ -1,42 +1,24 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/pages/RegisterPage.tsx
-// ─────────────────────────────────────────────────────────────────────────────
+// src/pages/RegisterPage.tsx — Shopeers-inspired registration
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Zap } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, ArrowRight } from 'lucide-react';
 import { authApi } from '../api/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { Input } from '../components/ui/Input';
-import { Select } from '../components/ui/Select';
 import { Button } from '../components/ui/Button';
 import toast from 'react-hot-toast';
 
-const registerSchema = z
-  .object({
-    name: z.string().min(2, 'Name must be at least 2 characters').max(50),
-    email: z.string().email('Enter a valid email address'),
-    password: z
-      .string()
-      .min(6, 'Password must be at least 6 characters')
-      .max(72),
-    confirmPassword: z.string(),
-    role: z.enum(['admin', 'sales']),
-  })
-  .refine((d) => d.password === d.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
-
-const ROLE_OPTIONS = [
-  { value: 'sales', label: 'Sales User' },
-  { value: 'admin', label: 'Admin' },
-];
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -47,19 +29,14 @@ export const RegisterPage: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { role: 'sales' },
-  });
+  } = useForm<RegisterFormValues>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      const { confirmPassword, ...payload } = values;
-      void confirmPassword; // suppress unused var
-      const res = await authApi.register(payload);
+      const res = await authApi.register(values);
       if (res.success && res.data) {
         setAuth(res.data.user, res.data.token);
-        toast.success(`Account created! Welcome, ${res.data.user.name}! 🎉`);
+        toast.success('Account created! Welcome aboard 🎉');
         navigate('/dashboard');
       }
     } catch (err: unknown) {
@@ -71,27 +48,66 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-slide-up">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-glow">
-            <Zap className="w-7 h-7 text-white" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      background: 'var(--surface)',
+    }}>
+      {/* Left — Branding */}
+      <div
+        className="hidden-mobile"
+        style={{
+          flex: 1,
+          background: 'linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1e293b 100%)',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+          padding: 48, position: 'relative', overflow: 'hidden',
+        }}
+      >
+        <div style={{
+          position: 'absolute', top: -100, right: -100,
+          width: 300, height: 300, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(59,130,246,.15) 0%, transparent 70%)',
+        }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 400 }}>
+          <div className="animate-float" style={{
+            width: 72, height: 72, borderRadius: 18,
+            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 28px',
+            boxShadow: '0 12px 40px rgba(37,99,235,.35)',
+          }}>
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            Create account
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            Join Smart Leads Dashboard
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#f8fafc', marginBottom: 12, letterSpacing: '-0.02em' }}>
+            Join Smart Leads
+          </h2>
+          <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>
+            Start managing your sales pipeline with powerful analytics and AI-driven insights.
           </p>
         </div>
+      </div>
 
-        <div className="card p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Right — Form */}
+      <div style={{
+        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 32,
+      }}>
+        <div className="w-full max-w-md animate-scale-in">
+          <div style={{ marginBottom: 36 }}>
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--on-surface)', marginBottom: 8, letterSpacing: '-0.02em' }}>
+              Create your account
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--on-surface-muted)' }}>
+              Get started with Smart Leads in seconds
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
               label="Full Name"
-              placeholder="Rahul Sharma"
+              placeholder="John Doe"
               required
+              autoComplete="name"
               error={errors.name?.message}
               {...register('name')}
             />
@@ -101,15 +117,9 @@ export const RegisterPage: React.FC = () => {
               type="email"
               placeholder="you@company.com"
               required
+              autoComplete="email"
               error={errors.email?.message}
               {...register('email')}
-            />
-
-            <Select
-              label="Role"
-              options={ROLE_OPTIONS}
-              error={errors.role?.message}
-              {...register('role')}
             />
 
             <Input
@@ -117,11 +127,13 @@ export const RegisterPage: React.FC = () => {
               type={showPassword ? 'text' : 'password'}
               placeholder="Minimum 6 characters"
               required
+              autoComplete="new-password"
               error={errors.password?.message}
               rightIcon={
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
+                  className="hover:text-slate-600 transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -130,30 +142,23 @@ export const RegisterPage: React.FC = () => {
               {...register('password')}
             />
 
-            <Input
-              label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Repeat your password"
-              required
-              error={errors.confirmPassword?.message}
-              {...register('confirmPassword')}
-            />
-
             <Button
               type="submit"
               className="w-full"
               size="lg"
               isLoading={isSubmitting}
+              rightIcon={!isSubmitting ? <ArrowRight className="w-4 h-4" /> : undefined}
             >
               Create Account
             </Button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm mt-8" style={{ color: 'var(--on-surface-muted)' }}>
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-primary-600 hover:text-primary-700 font-medium hover:underline"
+              style={{ color: 'var(--primary)', fontWeight: 600 }}
+              className="hover:underline"
             >
               Sign in
             </Link>

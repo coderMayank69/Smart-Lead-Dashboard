@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#1e293b"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
     </linearGradient>
   </defs>
-  <!-- Lightning bolt / upward arrow representing leads & growth -->
-  <path d="M18 6L10 17h6l-2 9 10-12h-6L18 6z" fill="url(#g)"/>
-  <!-- Small user dot -->
-  <circle cx="9" cy="9" r="3" fill="url(#g)" opacity="0.6"/>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <!-- S + upward arrow shape -->
+  <path d="M10 11 Q10 8 13 8 L20 8 Q22 8 22 10 Q22 12 20 12 L13 12 Q10 12 10 14 Q10 16 13 16 L20 16 Q23 16 23 19 Q23 22 20 22 L13 22 Q10 22 10 20" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <polyline points="19,7 23,11 27,7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

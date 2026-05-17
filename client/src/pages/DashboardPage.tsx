@@ -1,249 +1,290 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// src/pages/DashboardPage.tsx – Stitch CRM Precision Aesthetic
-// ─────────────────────────────────────────────────────────────────────────────
+// src/pages/DashboardPage.tsx — Shopeers-inspired dashboard with live Groq AI assistant
 
-import React from 'react';
-import { Users, CheckCircle2, Phone, XCircle, Globe, Smartphone, UserCheck, TrendingUp } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Users, CheckCircle2, Phone, XCircle, Globe, Smartphone,
+  UserCheck, TrendingUp, TrendingDown, ArrowUpRight, Activity,
+  Sparkles, BarChart3, PieChart, SendHorizontal, Loader2,
+} from 'lucide-react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { useLeadStats } from '../hooks/useLeads';
 import { useAuthStore } from '../store/auth.store';
+import { aiApi } from '../api/ai.api';
 import { cn } from '../utils/cn';
 
-/* ── Stat Card ───────────────────────────────────────────────────────────── */
+/* ── Stat Card ── */
 interface StatCardProps {
-  title: string;
-  value: number;
-  icon: React.ReactNode;
-  iconBg: string;
-  borderClass: string;
-  subtitle?: string;
-  trend?: string;
+  title: string; value: number; icon: React.ReactNode;
+  iconBg: string; iconColor: string;
+  trend?: string; trendUp?: boolean; subtitle?: string; delay?: string;
 }
-
-const StatCard: React.FC<StatCardProps> = ({
-  title, value, icon, iconBg, borderClass, subtitle, trend
-}) => (
-  <div className={cn('stat-card animate-slide-up card-hover', borderClass)}>
-    <div>
-      <p className="stat-card-label">{title}</p>
-      <p className="stat-card-value">{value.toLocaleString()}</p>
-      {subtitle && <p className="text-xs text-muted mt-0.5">{subtitle}</p>}
-      {trend && (
-        <div className="stat-card-footer">
-          <TrendingUp className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-          <span className="text-emerald-600 text-xs">{trend}</span>
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconBg, iconColor, trend, trendUp = true, subtitle, delay = '0ms' }) => (
+  <div className="card card-hover animate-slide-up" style={{ animationDelay: delay, animationFillMode: 'both' }}>
+    <div className="stat-card">
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p className="stat-card-label">{title}</p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
+          <p className="stat-card-value">{value.toLocaleString()}</p>
+          {trend && (
+            <span className={cn('trend-badge', trendUp ? 'trend-up' : 'trend-down')}>
+              {trendUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {trend}
+            </span>
+          )}
         </div>
-      )}
-    </div>
-    <div className={cn('stat-card-icon', iconBg)}>
-      {icon}
+        {subtitle && <p style={{ fontSize: 11.5, color: 'var(--on-surface-muted)', marginTop: 4 }}>{subtitle}</p>}
+      </div>
+      <div className="stat-card-icon" style={{ background: iconBg, color: iconColor }}>{icon}</div>
     </div>
   </div>
 );
 
-/* ── Mini Progress Row ───────────────────────────────────────────────────── */
-interface ProgressRowProps {
-  label: string;
-  count: number;
-  total: number;
-  fillClass: string;
-}
-
-const ProgressRow: React.FC<ProgressRowProps> = ({ label, count, total, fillClass }) => {
-  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium" style={{ color: 'var(--on-surface)' }}>{label}</span>
-        <span className="text-muted tabular-nums">{count} <span className="text-xs">({pct}%)</span></span>
+/* ── Progress Row ── */
+const ProgressRow: React.FC<{ label: string; count: number; total: number; color: string; dotColor: string }> =
+  ({ label, count, total, color, dotColor }) => {
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid var(--outline)' }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
+        <span style={{ flex: 1, fontSize: 13.5, fontWeight: 500, color: 'var(--on-surface)' }}>{label}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--on-surface)', minWidth: 28, textAlign: 'right' }}>{count}</span>
+        <div style={{ width: 80, flexShrink: 0 }}><div className="progress-bar"><div className="progress-fill" style={{ width: `${pct}%`, background: color }} /></div></div>
+        <span style={{ fontSize: 11.5, color: 'var(--on-surface-muted)', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
       </div>
-      <div className="progress-bar">
-        <div
-          className={cn('progress-fill', fillClass)}
-          style={{ width: `${pct}%` }}
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        />
-      </div>
-    </div>
-  );
-};
+    );
+  };
 
-/* ── Source Row ──────────────────────────────────────────────────────────── */
-interface SourceRowProps {
-  icon: React.ReactNode;
-  iconBg: string;
-  label: string;
-  count: number;
-  total: number;
-  fillClass: string;
-}
-
-const SourceRow: React.FC<SourceRowProps> = ({ icon, iconBg, label, count, total, fillClass }) => {
-  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-  return (
-    <div className="flex items-center gap-3">
-      <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0', iconBg)}>
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between text-sm mb-1">
-          <span className="font-medium" style={{ color: 'var(--on-surface)' }}>{label}</span>
-          <span className="text-muted tabular-nums text-xs">{count} ({pct}%)</span>
-        </div>
-        <div className="progress-bar">
-          <div className={cn('progress-fill', fillClass)} style={{ width: `${pct}%` }} />
+/* ── Source Row ── */
+const SourceRow: React.FC<{ icon: React.ReactNode; iconBg: string; label: string; count: number; total: number; color: string }> =
+  ({ icon, iconBg, label, count, total, color }) => {
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
+        <div style={{ width: 38, height: 38, borderRadius: 10, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--on-surface)' }}>{label}</span>
+            <span style={{ fontSize: 12, color: 'var(--on-surface-muted)' }}>{count} ({pct}%)</span>
+          </div>
+          <div className="progress-bar"><div className="progress-fill" style={{ width: `${pct}%`, background: color }} /></div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-/* ── Skeleton ────────────────────────────────────────────────────────────── */
+/* ── Skeleton ── */
 const CardSkeleton = () => (
-  <div className="card p-5 space-y-3">
-    <div className="skeleton h-3 w-24 rounded" />
-    <div className="skeleton h-7 w-16 rounded" />
+  <div className="card p-6" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="skeleton" style={{ height: 12, width: 96, borderRadius: 6 }} />
+    <div className="skeleton" style={{ height: 32, width: 80, borderRadius: 6 }} />
+    <div className="skeleton" style={{ height: 10, width: 64, borderRadius: 6 }} />
   </div>
 );
 
-/* ── Page ────────────────────────────────────────────────────────────────── */
+/* ── AI Chat Message ── */
+interface ChatMsg { role: 'user' | 'assistant'; text: string }
+
+/* ── Page ── */
 export const DashboardPage: React.FC = () => {
   const { stats, isLoading } = useLeadStats();
   const { user } = useAuthStore();
+
+  /* AI Chat state */
+  const [chatInput, setChatInput] = useState('');
+  const [chatMsgs, setChatMsgs] = useState<ChatMsg[]>([
+    { role: 'assistant', text: 'Hi! Ask me anything about your leads pipeline.' },
+  ]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMsgs]);
+
+  const handleAiSend = async () => {
+    const msg = chatInput.trim();
+    if (!msg || aiLoading) return;
+    setChatInput('');
+    setChatMsgs((prev) => [...prev, { role: 'user', text: msg }]);
+    setAiLoading(true);
+    try {
+      const context = stats
+        ? `Total leads: ${stats.total}. Status breakdown: ${(stats.byStatus ?? []).map((s) => `${s._id}: ${s.count}`).join(', ')}. Sources: ${(stats.bySource ?? []).map((s) => `${s._id}: ${s.count}`).join(', ')}.`
+        : undefined;
+      const res = await aiApi.chat(msg, context);
+      setChatMsgs((prev) => [...prev, { role: 'assistant', text: res.data?.reply ?? 'No response received.' }]);
+    } catch {
+      setChatMsgs((prev) => [...prev, { role: 'assistant', text: 'Sorry, I could not connect to the AI service right now.' }]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const getCount = (items: { _id: string; count: number }[], key: string) =>
     items?.find((i) => i._id === key)?.count ?? 0;
 
   const total = stats?.total ?? 0;
+  const qualifiedCount = getCount(stats?.byStatus ?? [], 'Qualified');
+  const conversionPct = total > 0 ? Math.round((qualifiedCount / total) * 100) : 0;
 
-  const greetingHour = new Date().getHours();
-  const greeting = greetingHour < 12 ? 'Good morning' : greetingHour < 18 ? 'Good afternoon' : 'Good evening';
+  const greetHour = new Date().getHours();
+  const greeting = greetHour < 12 ? 'Good morning' : greetHour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
     <DashboardLayout
       title="Dashboard"
-      subtitle={`${greeting}, ${user?.name?.split(' ')[0]} 👋 — Here's your pipeline overview`}
+      subtitle={`${greeting}, ${user?.name?.split(' ')[0] ?? 'there'} — Here's your pipeline overview`}
     >
       {/* ── Stat Cards ── */}
-      <section aria-labelledby="stats-heading" className="mb-6">
-        <h2 id="stats-heading" className="sr-only">Pipeline statistics</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 24 }}>
+        {isLoading ? [...Array(4)].map((_, i) => <CardSkeleton key={i} />) : (
+          <>
+            <StatCard title="Total Leads" value={total} icon={<Users className="w-5 h-5" />} iconBg="#eff6ff" iconColor="#3b82f6" trend="+12.5%" trendUp subtitle="All pipeline leads" delay="0ms" />
+            <StatCard title="Qualified" value={qualifiedCount} icon={<CheckCircle2 className="w-5 h-5" />} iconBg="#f0fdf4" iconColor="#22c55e" trend="+8.4%" trendUp subtitle="High-value leads" delay="80ms" />
+            <StatCard title="Contacted" value={getCount(stats?.byStatus ?? [], 'Contacted')} icon={<Phone className="w-5 h-5" />} iconBg="#fffbeb" iconColor="#f59e0b" trend="+16.2%" trendUp subtitle="In progress" delay="160ms" />
+            <StatCard title="Lost" value={getCount(stats?.byStatus ?? [], 'Lost')} icon={<XCircle className="w-5 h-5" />} iconBg="#fef2f2" iconColor="#ef4444" trend="-4.0%" trendUp={false} subtitle="Closed-lost" delay="240ms" />
+          </>
+        )}
+      </div>
+
+      {/* ── Middle Row: Pipeline + AI ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 24 }}>
+        {/* Pipeline Status */}
+        <div className="card p-6 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <BarChart3 className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--on-surface)' }}>Pipeline Status</h3>
+            </div>
+            <button className="btn btn-ghost btn-sm" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <ArrowUpRight className="w-3.5 h-3.5" /> View leads
+            </button>
+          </div>
           {isLoading ? (
-            [...Array(4)].map((_, i) => <CardSkeleton key={i} />)
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[...Array(4)].map((_, i) => <div key={i} className="skeleton" style={{ height: 12, borderRadius: 6 }} />)}
+            </div>
           ) : (
             <>
-              <StatCard
-                title="Total Leads"
-                value={total}
-                icon={<Users className="w-5 h-5 text-blue-600" />}
-                iconBg="bg-blue-50"
-                borderClass="border-l-blue"
-                subtitle="All time"
-                trend="+12% this month"
-              />
-              <StatCard
-                title="Qualified"
-                value={getCount(stats?.byStatus ?? [], 'Qualified')}
-                icon={<CheckCircle2 className="w-5 h-5 text-green-600" />}
-                iconBg="bg-green-50"
-                borderClass="border-l-green"
-                subtitle="High-value leads"
-              />
-              <StatCard
-                title="Contacted"
-                value={getCount(stats?.byStatus ?? [], 'Contacted')}
-                icon={<Phone className="w-5 h-5 text-amber-600" />}
-                iconBg="bg-amber-50"
-                borderClass="border-l-amber"
-                subtitle="In progress"
-              />
-              <StatCard
-                title="Lost"
-                value={getCount(stats?.byStatus ?? [], 'Lost')}
-                icon={<XCircle className="w-5 h-5 text-red-500" />}
-                iconBg="bg-red-50"
-                borderClass="border-l-red"
-                subtitle="Closed-lost"
-              />
+              <ProgressRow label="New" count={getCount(stats?.byStatus ?? [], 'New')} total={total} color="#3b82f6" dotColor="#3b82f6" />
+              <ProgressRow label="Contacted" count={getCount(stats?.byStatus ?? [], 'Contacted')} total={total} color="#f59e0b" dotColor="#f59e0b" />
+              <ProgressRow label="Qualified" count={getCount(stats?.byStatus ?? [], 'Qualified')} total={total} color="#22c55e" dotColor="#22c55e" />
+              <ProgressRow label="Lost" count={getCount(stats?.byStatus ?? [], 'Lost')} total={total} color="#ef4444" dotColor="#ef4444" />
             </>
           )}
         </div>
-      </section>
 
-      {/* ── Charts Row ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Pipeline Status */}
-        <div className="card p-5">
-          <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--on-surface)' }}>
-            Pipeline Status
-          </h3>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="skeleton h-3 w-32 rounded" />
-                  <div className="skeleton h-2 rounded-full" />
+        {/* AI Assistant — Live with Groq */}
+        <div className="card animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'both', display: 'flex', flexDirection: 'column', height: 300 }}>
+          {/* Header */}
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--outline)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h3 style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--on-surface)', flex: 1 }}>AI Assistant</h3>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 9999, background: '#f0fdf4', color: '#16a34a', fontWeight: 600 }}>Live</span>
+          </div>
+          {/* Messages */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }} className="scrollbar-thin">
+            {chatMsgs.map((m, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                <div style={{
+                  maxWidth: '85%', padding: '8px 12px', borderRadius: m.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                  background: m.role === 'user' ? 'linear-gradient(135deg,#3b82f6,#2563eb)' : 'var(--surface-low)',
+                  color: m.role === 'user' ? '#fff' : 'var(--on-surface)',
+                  fontSize: 12.5, lineHeight: 1.5,
+                }}>
+                  {m.text}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <ProgressRow label="New"       count={getCount(stats?.byStatus ?? [], 'New')}       total={total} fillClass="bg-blue-500" />
-              <ProgressRow label="Contacted" count={getCount(stats?.byStatus ?? [], 'Contacted')} total={total} fillClass="bg-amber-500" />
-              <ProgressRow label="Qualified" count={getCount(stats?.byStatus ?? [], 'Qualified')} total={total} fillClass="bg-green-500" />
-              <ProgressRow label="Lost"      count={getCount(stats?.byStatus ?? [], 'Lost')}      total={total} fillClass="bg-red-500" />
-            </div>
-          )}
+              </div>
+            ))}
+            {aiLoading && (
+              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <div style={{ padding: '8px 12px', borderRadius: '12px 12px 12px 2px', background: 'var(--surface-low)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: 'var(--primary)' }} />
+                  <span style={{ fontSize: 12, color: 'var(--on-surface-muted)' }}>Thinking…</span>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+          {/* Input */}
+          <div style={{ padding: '10px 12px', borderTop: '1px solid var(--outline)', display: 'flex', gap: 8 }}>
+            <input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAiSend()}
+              placeholder="Ask about your pipeline…"
+              style={{
+                flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--outline)',
+                background: 'var(--surface-low)', color: 'var(--on-surface)', fontSize: 12.5,
+                fontFamily: 'inherit', outline: 'none',
+              }}
+            />
+            <button
+              onClick={handleAiSend}
+              disabled={!chatInput.trim() || aiLoading}
+              style={{
+                width: 34, height: 34, borderRadius: '50%', border: 'none', cursor: 'pointer',
+                background: chatInput.trim() && !aiLoading ? 'linear-gradient(135deg,#3b82f6,#2563eb)' : 'var(--surface-container)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 200ms', flexShrink: 0,
+              }}
+            >
+              <SendHorizontal className="w-3.5 h-3.5" style={{ color: chatInput.trim() && !aiLoading ? '#fff' : 'var(--on-surface-muted)' }} />
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Leads by Source */}
-        <div className="card p-5">
-          <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--on-surface)' }}>
-            Leads by Source
-          </h3>
+      {/* ── Bottom Row: Sources + Conversion ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        {/* Sources */}
+        <div className="card p-6 animate-slide-up" style={{ animationDelay: '250ms', animationFillMode: 'both' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <PieChart className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--on-surface)' }}>Leads by Source</h3>
+          </div>
           {isLoading ? (
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="skeleton w-9 h-9 rounded-lg" />
-                  <div className="flex-1 space-y-1">
-                    <div className="skeleton h-3 w-24 rounded" />
-                    <div className="skeleton h-2 rounded-full" />
+                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <div className="skeleton" style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0 }} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div className="skeleton" style={{ height: 10, width: 96, borderRadius: 4 }} />
+                    <div className="skeleton" style={{ height: 8, borderRadius: 9999 }} />
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
-              <SourceRow
-                icon={<Globe className="w-4 h-4 text-purple-600" />}
-                iconBg="bg-purple-50"
-                label="Website"
-                count={getCount(stats?.bySource ?? [], 'Website')}
-                total={total}
-                fillClass="bg-purple-500"
-              />
-              <SourceRow
-                icon={<Smartphone className="w-4 h-4 text-pink-600" />}
-                iconBg="bg-pink-50"
-                label="Instagram"
-                count={getCount(stats?.bySource ?? [], 'Instagram')}
-                total={total}
-                fillClass="bg-pink-500"
-              />
-              <SourceRow
-                icon={<UserCheck className="w-4 h-4 text-teal-600" />}
-                iconBg="bg-teal-50"
-                label="Referral"
-                count={getCount(stats?.bySource ?? [], 'Referral')}
-                total={total}
-                fillClass="bg-teal-500"
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <SourceRow icon={<Globe className="w-4 h-4 text-purple-600" />} iconBg="#faf5ff" label="Website" count={getCount(stats?.bySource ?? [], 'Website')} total={total} color="#a855f7" />
+              <SourceRow icon={<Smartphone className="w-4 h-4 text-pink-600" />} iconBg="#fdf2f8" label="Instagram" count={getCount(stats?.bySource ?? [], 'Instagram')} total={total} color="#ec4899" />
+              <SourceRow icon={<UserCheck className="w-4 h-4 text-teal-600" />} iconBg="#f0fdfa" label="Referral" count={getCount(stats?.bySource ?? [], 'Referral')} total={total} color="#14b8a6" />
             </div>
           )}
+        </div>
+
+        {/* Conversion Rate */}
+        <div className="card p-6 animate-slide-up" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <Activity className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--on-surface)' }}>Conversion Rate</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 8 }}>
+            <div style={{
+              width: 120, height: 120, borderRadius: '50%',
+              background: `conic-gradient(#22c55e ${conversionPct * 3.6}deg, var(--surface-container) 0deg)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+            }}>
+              <div style={{ width: 90, height: 90, borderRadius: '50%', background: 'var(--surface-lowest)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--on-surface)', letterSpacing: '-0.02em' }}>{conversionPct}%</span>
+              </div>
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--on-surface)', marginBottom: 4 }}>Qualified conversion</p>
+            <p style={{ fontSize: 12, color: 'var(--on-surface-muted)' }}>{qualifiedCount} of {total} total leads</p>
+          </div>
         </div>
       </div>
     </DashboardLayout>

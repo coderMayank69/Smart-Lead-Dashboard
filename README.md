@@ -1,282 +1,138 @@
 # Smart Lead Dashboard
 
-<div align="center">
+<p align="center">
+  <img src="client/public/logo.png" alt="Smart Lead Dashboard Logo" width="100" style="border-radius:20px"/>
+</p>
 
-<img src="client/public/logo.png" alt="Smart Lead Dashboard Logo" width="80" height="80" style="border-radius:16px; margin-bottom: 16px" />
+<p align="center">
+  <strong>AI-Powered Lead Management CRM — Built with the MERN Stack</strong><br/>
+  Track, nurture, and convert leads with a beautiful analytics dashboard and a live AI assistant.
+</p>
 
-### Smart Leads
-
-**A production-grade full-stack Lead Management CRM built with MERN stack and TypeScript.**
-
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-
-[Live Demo](#) · [API Docs](#api-documentation) · [Report Bug](https://github.com/coderMayank69/Smart-Lead-Dashboard/issues) · [Request Feature](https://github.com/coderMayank69/Smart-Lead-Dashboard/issues)
-
-</div>
-
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-blue?logo=react" />
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" />
+  <img src="https://img.shields.io/badge/Node.js-Express-green?logo=node.js" />
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb" />
+  <img src="https://img.shields.io/badge/AI-Groq%20LLaMA%203.3-orange" />
+</p>
 
 ---
 
 ## ✨ Features
 
-### Core
-- 🔐 **JWT Authentication** — Register, login, protected routes, bcrypt password hashing
-- 👥 **Role-Based Access Control** — Admin (full access) and Sales (own leads) roles
-- 📋 **Full Lead CRUD** — Create, Read, Update, Delete with form validation
-- 🔍 **Advanced Filtering** — Multi-filter by status, source, and search query
-- 📝 **Debounced Search** — 400ms delay for efficient API calls
-- 📄 **Backend Pagination** — 10 records per page with full metadata
-- 📤 **CSV Export** — Download filtered leads with Excel-compatible encoding
+- **Full CRUD** — Create, read, update, and delete leads with instant feedback
+- **Role-based access** — Admin and Sales roles with separate permissions
+- **Live AI Assistant** — Powered by Groq's LLaMA 3.3 70B, with your pipeline context injected automatically
+- **Analytics Dashboard** — Stat cards with trend badges, pipeline status bars, source breakdown, and conversion rate donut chart
+- **Authentication** — JWT-based auth with protected routes and persistent sessions
+- **CSV Export** — Export your entire lead list with one click
+- **Responsive** — Mobile-first layout with collapsible sidebar
+- **Dark Mode** — System-aware with manual toggle
+- **Shopeers-inspired UI** — Clean glassmorphic design with micro-animations
 
-### Technical Excellence
-- 🏗️ **Clean Architecture** — Controller → Service → Model separation
-- 📐 **Zod Validation** — Runtime type-safe validation on both client and server
-- 🎨 **Dark Mode** — System-aware with localStorage persistence
-- 💅 **Design System** — Custom Tailwind CSS components with animations
-- 🐳 **Docker Setup** — Full containerized environment with docker-compose
-- 🔒 **Security** — Helmet, rate limiting, CORS, input sanitization
+## 🖥️ Screenshots
 
----
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, TypeScript, Vite, TailwindCSS |
-| State | Zustand (persisted) |
-| Forms | React Hook Form + Zod |
-| Backend | Node.js, Express, TypeScript |
-| Database | MongoDB + Mongoose |
-| Auth | JWT + bcrypt |
-| Validation | Zod |
-| DevOps | Docker, docker-compose |
-| HTTP Client | Axios |
-
----
-
-## 📁 Project Structure
-
-```
-smart-lead-dashboard/
-├── client/                    # React + TypeScript frontend
-│   ├── src/
-│   │   ├── api/               # Typed API calls (axios instances)
-│   │   ├── components/
-│   │   │   ├── ui/            # Design system primitives
-│   │   │   ├── leads/         # Lead-specific components
-│   │   │   └── layout/        # Sidebar, Header, DashboardLayout
-│   │   ├── hooks/             # useLeads, useDebounce custom hooks
-│   │   ├── pages/             # Login, Register, Dashboard, Leads
-│   │   ├── router/            # ProtectedRoute, PublicRoute guards
-│   │   ├── store/             # Zustand stores (auth, ui)
-│   │   ├── types/             # Shared TypeScript interfaces
-│   │   └── utils/             # cn, csv export, constants
-├── server/                    # Express + TypeScript backend
-│   ├── src/
-│   │   ├── config/            # MongoDB connection
-│   │   ├── controllers/       # Request handlers
-│   │   ├── middlewares/       # Auth, RBAC, validation, error handler
-│   │   ├── models/            # Mongoose models
-│   │   ├── routes/            # Express routers
-│   │   ├── services/          # Business logic layer
-│   │   ├── types/             # Shared interfaces
-│   │   ├── utils/             # JWT, response helpers
-│   │   └── validators/        # Zod schemas
-│   └── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
----
+| Login | Dashboard | Leads |
+|-------|-----------|-------|
+| Split-panel auth | Stats + AI chat | Filter & table |
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB (local or Atlas)
-- npm or yarn
+- MongoDB Atlas account (or local MongoDB)
+- Groq API key (free at [console.groq.com](https://console.groq.com))
 
-### 1. Clone the repository
+### 1. Clone
 ```bash
 git clone https://github.com/coderMayank69/Smart-Lead-Dashboard.git
 cd Smart-Lead-Dashboard
 ```
 
-### 2. Setup the server
+### 2. Server setup
 ```bash
 cd server
-cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secret
+cp ../.env.example .env   # fill in your values
 npm install
-npm run dev
+npm run dev               # starts on :5000
 ```
 
-### 3. Setup the client
+### 3. Client setup
 ```bash
 cd client
-cp .env.example .env
+# .env already has VITE_API_URL=http://localhost:5000/api/v1
 npm install
-npm run dev
+npm run dev               # starts on :5173
 ```
 
-### 4. Open in browser
-- **Frontend:** http://localhost:5173
-- **API:** http://localhost:5000/health
-
----
-
-## 🐳 Docker Setup
-
-Run the entire stack with one command:
-
+### 4. Docker (full stack)
 ```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
+# From project root — needs MONGODB_URI + JWT_SECRET in .env
+docker compose up --build
+# Frontend: http://localhost
 ```
 
-Services:
-| Service | Port |
-|---------|------|
-| Frontend (nginx) | 5173 |
-| Backend API | 5000 |
-| MongoDB | 27017 |
+## 🔑 Environment Variables
 
----
+### Server (`server/.env`)
+| Variable | Required | Description |
+|---|---|---|
+| `MONGODB_URI` | ✅ | MongoDB Atlas connection string |
+| `JWT_SECRET` | ✅ | Secret key for JWT signing |
+| `JWT_EXPIRES_IN` | | Token expiry (default: `7d`) |
+| `CLIENT_URL` | | Comma-separated allowed origins |
+| `GROQ_API_KEY` | ✅ | Groq API key for AI assistant |
+| `PORT` | | Server port (default: `5000`) |
 
-## 📖 API Documentation
+### Client (`client/.env`)
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Backend API base URL |
 
-### Base URL
+## 🏗️ Architecture
+
 ```
-http://localhost:5000/api/v1
-```
-
-### Authentication
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/auth/register` | ❌ | Create new account |
-| POST | `/auth/login` | ❌ | Login and get token |
-| GET | `/auth/me` | ✅ | Get current user profile |
-
-### Leads
-
-| Method | Endpoint | Auth | Role | Description |
-|--------|----------|------|------|-------------|
-| GET | `/leads` | ✅ | Any | List leads (with filters) |
-| POST | `/leads` | ✅ | Any | Create new lead |
-| GET | `/leads/stats` | ✅ | Any | Get pipeline stats |
-| GET | `/leads/:id` | ✅ | Any | Get lead by ID |
-| PUT | `/leads/:id` | ✅ | Any | Update lead |
-| DELETE | `/leads/:id` | ✅ | Any | Delete lead |
-
-### Query Parameters (GET /leads)
-
-| Param | Type | Values | Description |
-|-------|------|--------|-------------|
-| `status` | string | New, Contacted, Qualified, Lost | Filter by status |
-| `source` | string | Website, Instagram, Referral | Filter by source |
-| `search` | string | any | Search name or email |
-| `sortBy` | string | latest, oldest | Sort order |
-| `page` | number | ≥1 | Page number |
-| `limit` | number | 1-100 | Records per page |
-
-### Response Format
-
-```json
-{
-  "success": true,
-  "message": "Leads fetched successfully",
-  "data": { "leads": [...] },
-  "meta": {
-    "total": 45,
-    "page": 1,
-    "limit": 10,
-    "totalPages": 5,
-    "hasNextPage": true,
-    "hasPrevPage": false
-  }
-}
+Smart-Lead-Dashboard/
+├── client/               # React + Vite + TypeScript
+│   ├── src/
+│   │   ├── api/          # Axios API clients
+│   │   ├── components/   # UI + layout + lead components
+│   │   ├── hooks/        # useLeads, useDebounce
+│   │   ├── pages/        # Dashboard, Leads, Login, Register
+│   │   ├── store/        # Zustand auth + UI stores
+│   │   └── types/        # Shared TypeScript interfaces
+│   └── public/           # Logo, favicon
+└── server/               # Express + TypeScript
+    └── src/
+        ├── config/       # DB + env config
+        ├── controllers/  # Auth + Lead + AI handlers
+        ├── middlewares/  # Auth, validation, error handling
+        ├── models/       # Mongoose User + Lead models
+        ├── routes/       # Auth, Lead, AI routes
+        └── validators/   # Zod schemas
 ```
 
-### Error Response
+## 🤖 AI Assistant
 
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "data": [
-    { "field": "email", "message": "Enter a valid email address" }
-  ]
-}
-```
+The AI assistant uses **Groq's LLaMA 3.3 70B** model. On each message it automatically injects your current pipeline stats as context so it can give specific, actionable insights:
 
----
+> "You have 24 total leads. Website is your top source at 67%. Your qualified conversion rate is 29% — industry average is 20-25%, so you're performing well!"
 
-## 🔐 Security Features
+## 🚢 Deployment
 
-- **JWT** tokens with configurable expiry
-- **bcrypt** password hashing (12 rounds)
-- **Helmet** security headers
-- **Rate limiting** — 200 req/15min globally, 20 req/15min on auth routes
-- **CORS** restricted to configured client URL
-- **Input validation** via Zod on all endpoints
-- **Mongoose query sanitization** via schema types
+### Render (recommended)
+1. Push to GitHub
+2. Create **Web Service** for `server/` → set all env vars in Render dashboard → add `GROQ_API_KEY`
+3. Create **Web Service** for `client/` → set `VITE_API_URL` to your Render server URL
 
----
+The CORS config automatically accepts any `.onrender.com` and `.vercel.app` origin.
 
-## 🎨 UI Components
+## 📄 Demo Credentials
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@demo.com | password123 |
+| Sales | sales@demo.com | password123 |
 
-Built reusable component library:
-- `Button` — variants: primary, secondary, danger, ghost + loading state
-- `Input` — with label, error, hint, left/right icon
-- `Select` — custom styled dropdown
-- `Modal` — accessible with Escape key + scroll lock
-- `StatusBadge / SourceBadge` — color-coded with dot indicator
-- `EmptyState` — consistent empty data display
-- `Skeleton` — shimmer loading placeholders
-- `ConfirmDialog` — destructive action confirmation
-- `Pagination` — smart page number display
-
----
-
-## 📝 Environment Variables
-
-### Server (.env)
-```env
-PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/smart-lead-dashboard
-JWT_SECRET=your_super_secret_key
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:5173
-```
-
-### Client (.env)
-```env
-VITE_API_URL=http://localhost:5000/api/v1
-```
-
----
-
-## 👨‍💻 Author
-
-**Mayank Singh**
-- Portfolio: [mayank-developer.vercel.app](https://mayank-developer.vercel.app/)
-- GitHub: [@coderMayank69](https://github.com/coderMayank69)
-
----
-
-## 📄 License
-
-MIT © Mayank Singh
+## 📝 License
+MIT — Built by [Mayank Singh](https://mayank-developer.vercel.app)
