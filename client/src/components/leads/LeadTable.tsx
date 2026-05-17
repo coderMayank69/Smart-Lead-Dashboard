@@ -16,7 +16,7 @@ interface LeadTableProps {
   onView: (lead: Lead) => void;
 }
 
-export const LeadTable: React.FC<LeadTableProps> = ({
+export const LeadTable: React.FC<LeadTableProps> = React.memo(({
   leads, isLoading, onEdit, onDelete, onView,
 }) => {
   if (!isLoading && leads.length === 0) {
@@ -99,4 +99,4 @@ export const LeadTable: React.FC<LeadTableProps> = ({
       </table>
     </div>
   );
-};
+});

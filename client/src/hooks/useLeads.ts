@@ -20,6 +20,10 @@ const DEFAULT_FILTERS: LeadFilters = {
   limit: 10,
 };
 
+// Simple in-memory cache for API requests
+const cache = new Map<string, { leads: Lead[]; meta: PaginationMeta; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 export const useLeads = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
@@ -29,15 +33,37 @@ export const useLeads = () => {
 
   const debouncedSearch = useDebounce(filters.search, 400);
 
-  const fetchLeads = useCallback(async () => {
+  const fetchLeads = useCallback(async (forceRefresh = false) => {
     setIsLoading(true);
     try {
+      const queryKey = JSON.stringify({ ...filters, search: debouncedSearch });
+      
+      // Check cache first
+      if (!forceRefresh && cache.has(queryKey)) {
+        const cached = cache.get(queryKey)!;
+        if (Date.now() - cached.timestamp < CACHE_TTL) {
+          setLeads(cached.leads);
+          setMeta(cached.meta);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const response = await leadsApi.getAll({
         ...filters,
         search: debouncedSearch,
       });
-      setLeads(response.data?.leads ?? []);
-      setMeta(response.meta ?? null);
+      
+      const newLeads = response.data?.leads ?? [];
+      const newMeta = response.meta ?? null;
+      
+      // Save to cache
+      if (newMeta) {
+        cache.set(queryKey, { leads: newLeads, meta: newMeta, timestamp: Date.now() });
+      }
+
+      setLeads(newLeads);
+      setMeta(newMeta);
     } catch {
       toast.error('Failed to fetch leads');
     } finally {
@@ -67,7 +93,8 @@ export const useLeads = () => {
     try {
       await leadsApi.create(data);
       toast.success('Lead created successfully!');
-      await fetchLeads();
+      cache.clear(); // Invalidate cache
+      await fetchLeads(true);
       return true;
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })
@@ -84,7 +111,8 @@ export const useLeads = () => {
     try {
       await leadsApi.update(id, data);
       toast.success('Lead updated');
-      await fetchLeads();
+      cache.clear(); // Invalidate cache
+      await fetchLeads(true);
       return true;
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })
@@ -100,7 +128,8 @@ export const useLeads = () => {
     try {
       await leadsApi.delete(id);
       toast.success('Lead deleted');
-      await fetchLeads();
+      cache.clear(); // Invalidate cache
+      await fetchLeads(true);
       return true;
     } catch {
       toast.error('Failed to delete lead');
