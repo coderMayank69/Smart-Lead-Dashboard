@@ -12,7 +12,7 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { useLeads } from '../hooks/useLeads';
 import { exportLeadsToCSV } from '../utils/csv';
 import { LEAD_STATUSES, LEAD_SOURCES, SORT_OPTIONS } from '../utils/constants';
-import type { Lead, CreateLeadPayload, UpdateLeadPayload } from '../types';
+import type { Lead, CreateLeadPayload, UpdateLeadPayload, LeadStatus, LeadSource, SortOrder } from '../types';
 import toast from 'react-hot-toast';
 
 const fadeUp = {
@@ -36,15 +36,15 @@ export const LeadsPage: React.FC = () => {
   const [viewingLead, setViewingLead] = useState<Lead | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleCreate = useCallback(async (data: any) => {
-    const ok = await createLead(data as CreateLeadPayload);
+  const handleCreate = useCallback(async (data: CreateLeadPayload) => {
+    const ok = await createLead(data);
     if (ok) setModalOpen(false);
     return ok;
   }, [createLead]);
 
-  const handleUpdate = useCallback(async (data: any) => {
+  const handleUpdate = useCallback(async (data: UpdateLeadPayload) => {
     if (!editingLead) return false;
-    const ok = await updateLead(editingLead._id, data as UpdateLeadPayload);
+    const ok = await updateLead(editingLead._id, data);
     if (ok) setEditingLead(null);
     return ok;
   }, [editingLead, updateLead]);
@@ -95,7 +95,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.status}
-            onChange={(e) => updateFilter('status', e.target.value as any)}
+            onChange={(e) => updateFilter('status', e.target.value as LeadStatus | '')}
           >
             <option value="">All Status</option>
             {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -106,7 +106,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.source}
-            onChange={(e) => updateFilter('source', e.target.value as any)}
+            onChange={(e) => updateFilter('source', e.target.value as LeadSource | '')}
           >
             <option value="">All Sources</option>
             {LEAD_SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -117,7 +117,7 @@ export const LeadsPage: React.FC = () => {
             className="select-field"
             style={{ width: 140 }}
             value={filters.sortBy}
-            onChange={(e) => updateFilter('sortBy', e.target.value as any)}
+            onChange={(e) => updateFilter('sortBy', e.target.value as SortOrder)}
           >
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>

@@ -72,7 +72,8 @@ export const useLeads = () => {
   }, [filters, debouncedSearch]);
 
   useEffect(() => {
-    fetchLeads();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchLeads();
   }, [fetchLeads]);
 
   const updateFilter = useCallback(<K extends keyof LeadFilters>(key: K, value: LeadFilters[K]) => {

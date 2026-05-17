@@ -14,13 +14,7 @@ import { aiApi } from '../api/ai.api';
 import { cn } from '../utils/cn';
 
 /* ── Animation variants ── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
-  show: (delay: number = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1], delay },
-  }),
-};
+
 
 const stagger = {
   hidden: {},
