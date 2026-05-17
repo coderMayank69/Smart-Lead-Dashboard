@@ -12,6 +12,7 @@ import { useLeadStats } from '../hooks/useLeads';
 import { useAuthStore } from '../store/auth.store';
 import { aiApi } from '../api/ai.api';
 import { cn } from '../utils/cn';
+import { Link } from 'react-router-dom';
 
 /* ── Animation variants ── */
 
@@ -198,9 +199,9 @@ export const DashboardPage: React.FC = () => {
               <BarChart3 className="w-4 h-4" style={{ color: 'var(--primary)' }} />
               <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--on-surface)' }}>Pipeline Status</h3>
             </div>
-            <button className="btn btn-ghost btn-sm" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Link to="/leads" className="btn btn-ghost btn-sm" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
               <ArrowUpRight className="w-3.5 h-3.5" /> View leads
-            </button>
+            </Link>
           </div>
           {isLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
